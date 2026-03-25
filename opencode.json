@@ -51,10 +51,11 @@
         }
       },
       "tools": {
-        "bash": true,
-        "edit": true,
+        "bash": false,
+        "edit": false,
         "read": true,
-        "write": true
+        "write": false,
+        "task": true
       }
     },
     "sdd-explore": {
