@@ -22,27 +22,42 @@ Todas las skills están en `~/.agents/skills/`
 
 ## Sub-Agentes SDD (Spec-Driven Development)
 
-Sistema de 6 fases para tareas sustanciales:
+Sistema completo de 9 fases para tareas sustanciales:
 
 ```
-explore → spec → tasks → apply → verify → archive
+propose → explore → spec → design → tasks → apply → verify → archive
+              ↑
+              |
+            init
 ```
 
 ### Fases SDD
 
 | Fase | Skill | Qué hace |
 |------|-------|----------|
-| **explore** | `sdd-workflow/skills/sdd-explore` | Investiga el codebase, identifica riesgos |
-| **spec** | `sdd-workflow/skills/sdd-spec` | Escribe specs delta (Given/When/Then) |
-| **tasks** | `sdd-workflow/skills/sdd-tasks` | Lista de tareas en fases |
-| **apply** | `sdd-workflow/skills/sdd-apply` | Implementa código (soporta TDD) |
-| **verify** | `sdd-workflow/skills/sdd-verify` | Valida contra specs con tests reales |
-| **archive** | `sdd-workflow/skills/sdd-archive** | Cierra cambio, persiste estado |
+| **init** | `sdd-init` | Detecta stack, bootstraps persistencia, construye skill registry |
+| **propose** | `sdd-propose` | Crea proposal.md con intent, scope, rollback plan |
+| **explore** | `sdd-explore` | Investiga el codebase, identifica riesgos |
+| **spec** | `sdd-spec` | Escribe specs delta (Given/When/Then) |
+| **design** | `sdd-design` | Arquitectura, decisiones técnicas, ADRs |
+| **tasks** | `sdd-tasks` | Lista de tareas en fases |
+| **apply** | `sdd-apply` | Implementa código (soporta TDD) |
+| **verify** | `sdd-verify` | Valida contra specs con tests reales |
+| **archive** | `sdd-archive` | Cierra cambio, persiste estado |
+
+### Skills de Gestión
+
+| Skill | Qué hace |
+|-------|----------|
+| `skill-registry` | Escanea skills instalados, construye registry |
+| `branch-pr` | Crea branches y PRs, sincroniza con git-work-items |
+| `issue-creation` | Crea issues en Plane/Gitea desde tareas |
+| `quick-delegate` | Auto-detecta skill de dominio para tareas pequeñas |
 
 ### Quick Delegate
 
 Para tareas pequeñas que no necesitan SDD completo:
-- **Skill**: `sdd-workflow/skills/quick-delegate`
+- **Skill**: `quick-delegate`
 - **Auto-detecta** qué skill de dominio usar
 - **Decision matrix** integrada
 
@@ -151,14 +166,16 @@ Todo sub-agente DEBE retornar:
 
 | Comando | Acción |
 |---------|--------|
-| `/sdd-init` | Detecta stack, bootstraps persistencia |
+| `/sdd-init` | Detecta stack, bootstraps persistencia, construye skill registry |
 | `/sdd-explore <topic>` | Investiga codebase |
 | `/sdd-new <name>` | Inicia nuevo cambio |
 | `/sdd-continue` | Ejecuta siguiente fase |
+| `/sdd-ff` | Fast-forward planning (proposal → specs → design → tasks) |
 | `/sdd-spec <name>` | Escribe specs |
 | `/sdd-apply` | Implementa tareas |
 | `/sdd-verify` | Verifica calidad |
 | `/sdd-archive` | Cierra cambio |
+| `/skill-registry` | Escanea y actualiza skill registry |
 
 ---
 
@@ -168,3 +185,46 @@ Disponible en `memory-engram`. Usar proactivamente:
 - Guardar después de decisiones importantes
 - Buscar cuando el usuario menciona trabajo previo
 - Hacer summary al cerrar sesión
+
+---
+
+## Persistencia Híbrida
+
+Sistema de persistencia con 4 modos configurables. Los sub-agentes guardan y recuperan artifacts automáticamente.
+
+### Modos de Persistencia
+
+| Modo | Almacenamiento | Descripción |
+|------|----------------|-------------|
+| `engram` | Engram memory | Valor por defecto, máxima persistencia |
+| `openspec` | Filesystem (.atl/) | Cuando Engram no está disponible |
+| `hybrid` | Ambos | Redundante, máxima seguridad |
+| `none` | Ninguno | Stateless, solo testing |
+
+### Resolución de Modo
+
+El modo se resuelve en este orden (el primero que encuentra):
+1. Variable de entorno: `PERSISTENCE_MODE`
+2. Configuración de proyecto: `.opencode/persistence.yaml`
+3. Configuración global: `~/.config/opencode/persistence.yaml`
+4. Default: `engram`
+
+### Artefactos SDD
+
+Cada fase crea artifacts que se persistieren según el modo:
+- **Engram**: topic_key `sdd/{change-name}/{artifact-type}`
+- **Openspec**: `.atl/changes/{change-name}/{artifact}.md`
+
+Ver convenciones completas en: `~/.agents/skills/_shared/`
+
+---
+
+## Regla de Desconfianza
+
+**SIEMPRE desconfiar de lo que se hace. Verificar antes de ejecutar.**
+
+- Validar cada step crítico
+- Verificar accesibilidad de paths
+- Usar Result Contract en todas las respuestas
+- No asumir que funciona - probar
+- Incluir fallbacks en operaciones críticas
