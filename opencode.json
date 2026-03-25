@@ -102,20 +102,20 @@
       ],
       "environment": {
         "GITEA_BASE_URL": "https://gitea.istmocenter.com",
-        "GITEA_TOKEN": "TU_GITEA_TOKEN"
+        "GITEA_TOKEN": "{file:.secrets/gitea-token}"
       },
       "type": "local"
     },
     "plane": {
       "command": [
-        "npx",
-        "-y",
-        "@plane/mcp-server"
+        "uvx",
+        "plane-mcp-server",
+        "stdio"
       ],
       "environment": {
-        "PLANE_API_KEY": "TU_PLANE_API_KEY",
+        "PLANE_API_KEY": "{file:.secrets/plane-api-key}",
         "PLANE_BASE_URL": "https://plane.intranet.istmocenter.com",
-        "PLANE_WORKSPACE_SLUG": "TU_WORKSPACE"
+        "PLANE_WORKSPACE_SLUG": "{file:.secrets/plane-workspace-slug}"
       },
       "type": "local"
     }
@@ -144,5 +144,5 @@
       "*.env.*": "deny",
       ".env.example": "allow"
     }
-  },
+  }
 }
