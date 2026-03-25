@@ -177,8 +177,8 @@
         "stdio"
       ],
       "environment": {
-        "GITEA_BASE_URL": "https://gitea.istmocenter.com",
-        "GITEA_TOKEN": "{file:.secrets/gitea-token}"
+        "GITEA_HOST": "https://gitea.istmocenter.com",
+        "GITEA_ACCESS_TOKEN": "{file:.secrets/gitea-token}"
       },
       "type": "local"
     },
