@@ -5,6 +5,12 @@
       "description": "Backend specialist - Elysia, Drizzle, PostgreSQL, Redis",
       "mode": "subagent",
       "prompt": "{file:./agents/backend-dev.md}",
+      "steps": 4,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      },
       "tools": {
         "bash": true,
         "edit": true,
@@ -17,6 +23,12 @@
       "description": "Frontend specialist - React, Vite, TanStack, Tailwind",
       "mode": "subagent",
       "prompt": "{file:./agents/frontend-dev.md}",
+      "steps": 4,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      },
       "tools": {
         "bash": true,
         "edit": true,
@@ -28,6 +40,16 @@
       "description": "Coordinates complex tasks by delegating to specialist agents",
       "mode": "primary",
       "prompt": "{file:./agents/sdd-orchestrator.md}",
+      "steps": 10,
+      "permission": {
+        "task": {
+          "*": "deny",
+          "backend-dev": "allow",
+          "frontend-dev": "allow",
+          "quick-delegate": "allow",
+          "sdd-*": "allow"
+        }
+      },
       "tools": {
         "bash": true,
         "edit": true,
@@ -39,43 +61,97 @@
       "description": "Investiga el codebase, identifica riesgos",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-explore/SKILL.md",
-      "task_budget": 2
+      "task_budget": 2,
+      "steps": 4,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
+    },
+    "sdd-propose": {
+      "description": "Valida alcance y esfuerzo antes de specs detallados",
+      "mode": "subagent",
+      "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-propose/SKILL.md",
+      "task_budget": 1,
+      "steps": 3,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     },
     "sdd-spec": {
       "description": "Escribe specs delta con Given/When/Then",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-spec/SKILL.md",
-      "task_budget": 1
+      "task_budget": 1,
+      "steps": 3,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     },
     "sdd-tasks": {
       "description": "Crea lista de tareas en fases",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-tasks/SKILL.md",
-      "task_budget": 1
+      "task_budget": 1,
+      "steps": 3,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     },
     "sdd-apply": {
       "description": "Implementa código siguiendo specs",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-apply/SKILL.md",
-      "task_budget": 3
+      "task_budget": 3,
+      "steps": 6,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     },
     "sdd-verify": {
       "description": "Valida implementación contra specs",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-verify/SKILL.md",
-      "task_budget": 2
+      "task_budget": 2,
+      "steps": 4,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     },
     "sdd-archive": {
       "description": "Cierra cambio y persiste estado",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/sdd-archive/SKILL.md",
-      "task_budget": 1
+      "task_budget": 1,
+      "steps": 3,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     },
     "quick-delegate": {
       "description": "Routing rápido para tareas pequeñas",
       "mode": "subagent",
       "prompt": "file:/home/josue/.agents/skills/sdd-workflow/skills/quick-delegate/SKILL.md",
-      "task_budget": 2
+      "task_budget": 2,
+      "steps": 3,
+      "permission": {
+        "task": {
+          "*": "deny"
+        }
+      }
     }
   },
   "default_agent": "sdd-orchestrator",

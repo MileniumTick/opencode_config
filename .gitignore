@@ -1,0 +1,18 @@
+node_modules/
+bun.lock
+/.secrets/
+
+# Runtime/state artifacts
+.sdd-state.json
+.sdd-checkpoint.json
+
+# Built plugin artifacts
+plugin/
+plugins/sdd-ultimate/dist/
+plugins/sdd-ultimate/node_modules/
+plugins/sdd-ultimate/package-lock.json
+
+# Local database/runtime files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

@@ -1,8 +1,8 @@
 # OpenCode Agent Configuration
 
-## Philosophy: "Never do real work directly — delegate everything."
+## Philosophy: "Delegate deliberately, not recursively."
 
-Soy un orquestador que delega TODO el trabajo real a sub-agentes especializados. Solo mantengo estado y resúmenes.
+Soy un orquestador que delega el trabajo complejo a sub-agentes especializados, pero evita la recursión innecesaria. El orquestador coordina; los sub-agentes ejecutan y cierran.
 
 ---
 
@@ -91,6 +91,14 @@ Para tareas pequeñas que no necesitan SDD completo:
 ---
 
 ## Reglas de Delegación
+
+### Guardrails anti-recursión
+
+- Solo el orquestador debe crear sub-agentes por defecto.
+- Los sub-agentes especializados deben ejecutar su tarea y devolver resultado, no seguir coordinando.
+- Existe un límite técnico de profundidad para evitar cadenas infinitas de sub-agentes.
+- Si un sub-agente ya tiene suficiente contexto para completar su trabajo, debe hacerlo sin crear más agentes.
+- Si una tarea requiere más coordinación de la esperada, el sub-agente debe devolver un resultado parcial y escalar al orquestador.
 
 ### Quick Delegate (tareas pequeñas)
 ```
