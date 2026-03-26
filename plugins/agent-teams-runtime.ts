@@ -21,6 +21,26 @@ const DELEGATION_TRANSITIONS = new Map<string, Set<string>>([
   ["timed_out", new Set()],
 ])
 
+const TASK_TRANSITIONS = new Map<string, Set<string>>([
+  ["todo", new Set(["ready", "blocked", "cancelled"])],
+  ["ready", new Set(["claimed", "blocked", "cancelled"])],
+  ["claimed", new Set(["in_progress", "ready", "blocked", "cancelled"])],
+  ["in_progress", new Set(["review_needed", "ready", "blocked", "done", "failed", "cancelled"])],
+  ["blocked", new Set(["ready", "claimed", "cancelled"])],
+  ["review_needed", new Set(["verified", "in_progress", "blocked", "cancelled"])],
+  ["verified", new Set(["done", "in_progress", "blocked", "cancelled"])],
+  ["done", new Set([])],
+  ["failed", new Set([])],
+  ["cancelled", new Set([])],
+])
+
+function assertTaskTransition(from: string, to: string) {
+  const allowed = TASK_TRANSITIONS.get(from)
+  if (!allowed || !allowed.has(to)) {
+    throw new Error(`Invalid task transition: ${from} -> ${to}`)
+  }
+}
+
 type TeamRow = {
   id: string
   name: string
@@ -468,6 +488,7 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
   ensureColumn("delegations", "launch_error", "launch_error TEXT")
   ensureColumn("delegations", "launched_at", "launched_at TEXT")
   ensureColumn("delegations", "completed_at", "completed_at TEXT")
+  ensureColumn("tasks", "block_reason", "block_reason TEXT")
 
   const logEvent = db.query(`
     INSERT INTO runtime_events (id, team_id, entity_type, entity_id, event_type, payload_json, created_at)
@@ -1130,6 +1151,227 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
     },
     async execute(args) {
       const row = claimTaskTx(args.team_id, args.task_id, args.claimant, args.lease_minutes)
+      return JSON.stringify(row)
+    },
+  })
+
+  const taskReleaseTx = db.transaction((teamId: string, taskId: string, reason?: string) => {
+    const task = requireTask(teamId, taskId)
+    assertTaskTransition(task.status, "ready")
+
+    const now = nowIso()
+    const previousClaimedBy = task.claimed_by
+
+    db.query(`
+      UPDATE tasks
+      SET status = 'ready', claimed_by = NULL, claim_lease_expires_at = NULL, updated_at = $updated_at
+      WHERE id = $task_id AND team_id = $team_id
+    `).run({
+      $updated_at: now,
+      $task_id: taskId,
+      $team_id: teamId,
+    })
+
+    if (previousClaimedBy) {
+      maybeTouchRegisteredAgent(teamId, previousClaimedBy, {
+        status: "idle",
+        current_task_id: null,
+      })
+    }
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "task",
+      $entity_id: taskId,
+      $event_type: "task.released",
+      $payload_json: JSON.stringify({ previous_claimed_by: previousClaimedBy, reason: reason ?? null }),
+      $created_at: now,
+    })
+
+    return db.query(`SELECT * FROM tasks WHERE id = $task_id`).get({ $task_id: taskId }) as TaskRow
+  })
+
+  const taskRelease = tool({
+    description: "Release a claimed task back to the pool",
+    args: {
+      team_id: tool.schema.string(),
+      task_id: tool.schema.string(),
+      reason: tool.schema.string().optional(),
+    },
+    async execute(args) {
+      const row = taskReleaseTx(args.team_id, args.task_id, args.reason)
+      return JSON.stringify(row)
+    },
+  })
+
+  const taskBlockTx = db.transaction((teamId: string, taskId: string, reason?: string) => {
+    const task = requireTask(teamId, taskId)
+    assertTaskTransition(task.status, "blocked")
+
+    const now = nowIso()
+    const previousClaimedBy = task.claimed_by
+
+    db.query(`
+      UPDATE tasks
+      SET status = 'blocked', block_reason = $block_reason, updated_at = $updated_at
+      WHERE id = $task_id AND team_id = $team_id
+    `).run({
+      $block_reason: reason ?? null,
+      $updated_at: now,
+      $task_id: taskId,
+      $team_id: teamId,
+    })
+
+    if (previousClaimedBy) {
+      maybeTouchRegisteredAgent(teamId, previousClaimedBy, {
+        status: "idle",
+        current_task_id: null,
+      })
+    }
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "task",
+      $entity_id: taskId,
+      $event_type: "task.blocked",
+      $payload_json: JSON.stringify({ reason: reason ?? null, previous_status: task.status, claimed_by: previousClaimedBy }),
+      $created_at: now,
+    })
+
+    return db.query(`SELECT * FROM tasks WHERE id = $task_id`).get({ $task_id: taskId }) as TaskRow
+  })
+
+  const taskBlock = tool({
+    description: "Mark a task as blocked with an optional reason",
+    args: {
+      team_id: tool.schema.string(),
+      task_id: tool.schema.string(),
+      reason: tool.schema.string().optional(),
+    },
+    async execute(args) {
+      const row = taskBlockTx(args.team_id, args.task_id, args.reason)
+      return JSON.stringify(row)
+    },
+  })
+
+  const taskUnblockTx = db.transaction((teamId: string, taskId: string) => {
+    const task = requireTask(teamId, taskId)
+    assertTaskTransition(task.status, "ready")
+
+    const now = nowIso()
+    const previousClaimedBy = task.claimed_by
+
+    db.query(`
+      UPDATE tasks
+      SET status = 'ready', claimed_by = NULL, claim_lease_expires_at = NULL, block_reason = NULL, updated_at = $updated_at
+      WHERE id = $task_id AND team_id = $team_id
+    `).run({
+      $updated_at: now,
+      $task_id: taskId,
+      $team_id: teamId,
+    })
+
+    if (previousClaimedBy) {
+      maybeTouchRegisteredAgent(teamId, previousClaimedBy, {
+        status: "idle",
+        current_task_id: null,
+      })
+    }
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "task",
+      $entity_id: taskId,
+      $event_type: "task.unblocked",
+      $payload_json: JSON.stringify({ previous_claimed_by: previousClaimedBy }),
+      $created_at: now,
+    })
+
+    return db.query(`SELECT * FROM tasks WHERE id = $task_id`).get({ $task_id: taskId }) as TaskRow
+  })
+
+  const taskUnblock = tool({
+    description: "Unblock a blocked task and return it to the ready pool",
+    args: {
+      team_id: tool.schema.string(),
+      task_id: tool.schema.string(),
+    },
+    async execute(args) {
+      const row = taskUnblockTx(args.team_id, args.task_id)
+      return JSON.stringify(row)
+    },
+  })
+
+  const taskCompleteTx = db.transaction((teamId: string, taskId: string) => {
+    const task = requireTask(teamId, taskId)
+    assertTaskTransition(task.status, "done")
+
+    const now = nowIso()
+    const previousClaimedBy = task.claimed_by
+
+    db.query(`
+      UPDATE tasks
+      SET status = 'done', updated_at = $updated_at
+      WHERE id = $task_id AND team_id = $team_id
+    `).run({
+      $updated_at: now,
+      $task_id: taskId,
+      $team_id: teamId,
+    })
+
+    if (previousClaimedBy) {
+      maybeTouchRegisteredAgent(teamId, previousClaimedBy, {
+        status: "idle",
+        current_task_id: null,
+      })
+    }
+
+    // Cascade: find dependent tasks still in 'todo' and transition to 'ready'
+    const dependents = db.query(
+      `SELECT * FROM tasks WHERE team_id = $team_id AND depends_on_task_id = $task_id AND status = 'todo'`
+    ).all({ $team_id: teamId, $task_id: taskId }) as TaskRow[]
+
+    for (const dep of dependents) {
+      db.query(`UPDATE tasks SET status = 'ready', updated_at = $updated_at WHERE id = $id`).run({
+        $updated_at: now,
+        $id: dep.id,
+      })
+
+      logEvent.run({
+        $id: randomUUID(),
+        $team_id: teamId,
+        $entity_type: "task",
+        $entity_id: dep.id,
+        $event_type: "task.unblocked_by_completion",
+        $payload_json: JSON.stringify({ completed_task_id: taskId, dependent_task_id: dep.id }),
+        $created_at: now,
+      })
+    }
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "task",
+      $entity_id: taskId,
+      $event_type: "task.completed",
+      $payload_json: JSON.stringify({ claimed_by: previousClaimedBy, cascaded_dependents: dependents.length }),
+      $created_at: now,
+    })
+
+    return db.query(`SELECT * FROM tasks WHERE id = $task_id`).get({ $task_id: taskId }) as TaskRow
+  })
+
+  const taskComplete = tool({
+    description: "Mark a task as done, release the agent, and cascade to dependent tasks",
+    args: {
+      team_id: tool.schema.string(),
+      task_id: tool.schema.string(),
+    },
+    async execute(args) {
+      const row = taskCompleteTx(args.team_id, args.task_id)
       return JSON.stringify(row)
     },
   })
@@ -1964,6 +2206,10 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
       team_task_create: taskCreate,
       team_task_list: taskList,
       team_task_claim: taskClaim,
+      team_task_release: taskRelease,
+      team_task_block: taskBlock,
+      team_task_unblock: taskUnblock,
+      team_task_complete: taskComplete,
       team_delegation_create: delegationCreate,
       team_delegation_transition: delegationTransition,
       team_delegation_launch: delegationLaunch,
