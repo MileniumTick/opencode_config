@@ -55,6 +55,9 @@ This specification covers:
 - Recovery must record reconciliation decisions.
 - Recovery must not recreate live work from Engram alone when current SQLite state does not support that work.
 - Recovery actions such as requeueing stale claims or marking the team recovering or active must be explicit runtime operations.
+- Recovery must support explicit operator-invoked delegation resolution for open delegations when child-session or agent state can no longer be trusted.
+- Recovery must support explicit operator-invoked mailbox batch resolution for messages that are no longer actionable after reconciliation.
+- Recovery may support explicit delegation reassignment only when the original delegation has not yet launched live execution.
 
 ### 6. Git workflow
 
@@ -152,6 +155,32 @@ And SQLite no longer records that task as active
 When recovery runs
 Then the runtime must treat the Engram records as historical context only
 And it must not recreate live work unless an explicit reopen or operator action occurs
+
+### Scenario 8a: Resolve orphaned open delegation explicitly
+
+Given a delegation is still open in SQLite
+And the target agent is stale, offline, or otherwise unavailable for trusted continuation
+When an operator invokes runtime recovery to resolve that delegation as `failed`, `cancelled`, or `timed_out`
+Then the delegation must transition in SQLite through an explicit audited runtime operation
+And the runtime must record the reconciliation note and resulting delegation status
+And unresolved linked mailbox requests must remain visible until an explicit mailbox resolution action occurs
+
+### Scenario 8b: Reassign unlaunched delegation explicitly
+
+Given a delegation is in status `requested` or `accepted`
+And no child session has been launched for that delegation
+When an operator reassigns the delegation to a different target agent
+Then the runtime must update the delegation target in SQLite
+And the runtime must create a fresh mailbox delegation request for the new target agent
+And any prior mailbox request may only be resolved through an explicit audited runtime operation
+
+### Scenario 8c: Batch-resolve recovered mailbox items explicitly
+
+Given recovery inspection identifies unresolved mailbox messages that point to already-terminal tasks or delegations
+When an operator invokes mailbox batch resolution for those messages
+Then the runtime must mark those messages resolved in SQLite with audit timestamps
+And the runtime must record a recovery event describing the batch resolution decision
+And unresolved messages that were not selected must remain untouched
 
 ### Scenario 9: Enforce hotfix branch target
 

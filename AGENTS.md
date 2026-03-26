@@ -9,7 +9,10 @@ Soy un orquestador que delega el trabajo complejo a sub-agentes especializados, 
 ## Estructura de Skills
 
 ### Ubicación
-Todas las skills están en `~/.agents/skills/`
+Las skills se cargan desde dos ubicaciones reales en esta máquina:
+
+- `~/.config/opencode/skills/` → skills versionadas con este repo
+- `~/.agents/skills/` → skills instaladas globalmente
 
 ### Tipos de Skills
 
@@ -22,13 +25,13 @@ Todas las skills están en `~/.agents/skills/`
 
 ## Sub-Agentes SDD (Spec-Driven Development)
 
-Sistema completo de 9 fases para tareas sustanciales:
+Flujo práctico para tareas sustanciales en este repo:
 
 ```
-propose → explore → spec → design → tasks → apply → verify → archive
-              ↑
-              |
-            init
+explore → spec → tasks → apply → verify → archive
+    ↑
+    |
+   init
 ```
 
 ### Fases SDD
@@ -36,22 +39,18 @@ propose → explore → spec → design → tasks → apply → verify → archi
 | Fase | Skill | Qué hace |
 |------|-------|----------|
 | **init** | `sdd-init` | Detecta stack, bootstraps persistencia, construye skill registry |
-| **propose** | `sdd-propose` | Crea proposal.md con intent, scope, rollback plan |
 | **explore** | `sdd-explore` | Investiga el codebase, identifica riesgos |
 | **spec** | `sdd-spec` | Escribe specs delta (Given/When/Then) |
-| **design** | `sdd-design` | Arquitectura, decisiones técnicas, ADRs |
 | **tasks** | `sdd-tasks` | Lista de tareas en fases |
 | **apply** | `sdd-apply` | Implementa código (soporta TDD) |
 | **verify** | `sdd-verify` | Valida contra specs con tests reales |
 | **archive** | `sdd-archive` | Cierra cambio, persiste estado |
 
-### Skills de Gestión
+### Skills de Gestión / Orquestación
 
 | Skill | Qué hace |
 |-------|----------|
-| `skill-registry` | Escanea skills instalados, construye registry |
-| `branch-pr` | Crea branches y PRs, sincroniza con git-work-items |
-| `issue-creation` | Crea issues en Plane/Gitea desde tareas |
+| `skill-registry` | Escanea skills instalados y resume disponibilidad |
 | `quick-delegate` | Auto-detecta skill de dominio para tareas pequeñas |
 
 ### Quick Delegate
@@ -170,7 +169,7 @@ Todo sub-agente DEBE retornar:
 | `/sdd-explore <topic>` | Investiga codebase |
 | `/sdd-new <name>` | Inicia nuevo cambio |
 | `/sdd-continue` | Ejecuta siguiente fase |
-| `/sdd-ff` | Fast-forward planning (proposal → specs → design → tasks) |
+| `/sdd-ff` | Fast-forward planning (explore → spec → tasks) |
 | `/sdd-spec <name>` | Escribe specs |
 | `/sdd-apply` | Implementa tareas |
 | `/sdd-verify` | Verifica calidad |
@@ -211,11 +210,11 @@ El modo se resuelve en este orden (el primero que encuentra):
 
 ### Artefactos SDD
 
-Cada fase crea artifacts que se persistieren según el modo:
+Cada fase crea artifacts que se persisten según el modo:
 - **Engram**: topic_key `sdd/{change-name}/{artifact-type}`
 - **Openspec**: `.atl/changes/{change-name}/{artifact}.md`
 
-Ver convenciones completas en: `~/.agents/skills/_shared/`
+Ver convenciones completas en los shared resources instalados por las skills activas; en este repo hay material versionado bajo `skills/_shared/`.
 
 ---
 

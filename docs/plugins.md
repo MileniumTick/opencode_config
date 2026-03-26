@@ -18,6 +18,9 @@ Main orchestration plugin for team-based workflows.
 - Task distribution across agents
 - Delegation tracking
 - Git work items synchronization
+- Recovery/checkpoint operations
+- Explicit recovery reconciliation tools for delegations and mailbox cleanup
+- Real child-session delegation synchronization
 
 ### 2. engram.ts
 Memory persistence integration.
@@ -29,34 +32,15 @@ Prevents infinite agent spawning.
 - Limits sub-agent depth to 3
 - Prevents recursive delegation loops
 
-### 4. notification-plugin.ts
-System notifications (macOS).
-- `session.idle`: Notifies when session completes
-- `session.error`: Notifies on errors
-- `session.compacted`: Logs compaction events
+## Removed / Rejected Plugins
 
-### 5. env-protection.ts
-Security plugin for protecting sensitive files.
-- Blocks reading: `.env`, `.env.*`, `credentials.json`, etc.
-- Blocks writing to protected files
-- Warns on potentially sensitive files
+The following experimental plugins were removed because they were redundant, used suspicious/unsupported hooks, or introduced brittle platform-specific behavior:
 
-### 6. sdd-sync.ts
-SDD state synchronization.
-- Tracks SDD artifacts (proposal.md, spec.md, etc.)
-- Logs artifact creation
-- Syncs state on session compaction
-
-### 7. logging-plugin.ts
-Structured logging for all operations.
-- Logs session creation/completion
-- Logs tool execution
-- Logs errors and compaction
-
-### 8. context-injector.ts
-Injects project context into prompts.
-- Adds project info to compaction prompts
-- Includes security rules and conventions
+- `notification-plugin.ts`
+- `env-protection.ts`
+- `sdd-sync.ts`
+- `logging-plugin.ts`
+- `context-injector.ts`
 
 ## Hooks Reference
 
@@ -77,7 +61,7 @@ Injects project context into prompts.
 
 ## Adding Custom Plugins
 
-1. Create `.ts` file in `.config/opencode/plugins/`
+1. Create `.ts` file in `plugins/`
 2. Export a function matching the Plugin type
 3. Return hooks in an object
 
@@ -95,8 +79,8 @@ export const MyPlugin: Plugin = async ({ project, client, $, directory, worktree
 
 ## Disabling Plugins
 
-To disable a plugin, rename the file (e.g., `notification-plugin.ts.bak`) or remove it from the plugins directory.
+To disable a plugin, remove it from `plugins/` or move it outside the repo plugin directory.
 
 ## Configuration
 
-No additional configuration needed - plugins are auto-loaded from the plugins directory.
+No additional configuration needed - plugins are auto-loaded from `plugins/`.

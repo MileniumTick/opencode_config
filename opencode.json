@@ -32,6 +32,7 @@
       "tools": {
         "bash": true,
         "edit": true,
+        "glob": true,
         "read": true,
         "write": true
       }
@@ -61,16 +62,6 @@
       "description": "Investiga el codebase, identifica riesgos",
       "mode": "subagent",
       "prompt": "{file:./skills/sdd-explore/SKILL.md}",
-      "permission": {
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "sdd-propose": {
-      "description": "Valida alcance y esfuerzo antes de specs detallados",
-      "mode": "subagent",
-      "prompt": "{file:~/.agents/skills/sdd-propose/SKILL.md}",
       "permission": {
         "task": {
           "*": "deny"
@@ -138,7 +129,7 @@
       }
     },
     "quick-delegate": {
-      "description": "Routing rápido para tareas pequeñas",
+      "description": "Routing rápido para tareas pequeñas con delegación acotada",
       "mode": "subagent",
       "prompt": "{file:./skills/quick-delegate/SKILL.md}",
       "permission": {

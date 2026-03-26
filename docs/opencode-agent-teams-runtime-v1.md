@@ -38,15 +38,45 @@ Implemented now:
 - recovery checkpoint creation and latest-checkpoint lookup
 - recovery inspection for stale agents, stale claims, unresolved mailbox items, open delegations, and unfinished Git work items
 - explicit recovery actions to requeue stale claims and mark teams recovering or active
+- recovery inspection hints for orphaned delegations, child-session sync candidates, delegation reassignment review, and mailbox resolution review
+- explicit recovery actions to resolve open delegations, reassign unlaunched delegations, and batch-resolve mailbox messages
 - persisted git work item metadata for branch name, base branch, PR target, PR details, and commit batching mode
 - persisted artifact links so runtime entities can reference Engram checkpoints, summaries, and other durable artifacts
 - live Git validation tooling that checks recorded branch policy against the repository worktree
 
 Still pending for the next milestone:
 
-- automatic task lifecycle transitions beyond claim plus delegation/mailbox flows (release, block, complete)
 - automatic Engram writes from runtime events instead of explicit link registration tools
-- richer recovery actions for delegations and mailbox reconciliation
+- interruption and restart tests that exercise the new recovery action paths end to end
+
+## Recovery Operations Implemented Now
+
+Recovery remains operator-invoked and auditable. The runtime now exposes explicit tools for the main non-fake reconciliation paths:
+
+- `team_recovery_inspect`
+  - inspects stale claims, stale agents, unresolved mailbox, open delegations, unfinished Git work items
+  - also returns `recovery_candidates` for:
+    - `orphaned_delegations`
+    - `delegation_child_session_sync`
+    - `delegation_reassign_review`
+    - `mailbox_resolution_review`
+- `team_recovery_requeue_stale_claims`
+  - requeues stale claimed work back to `ready`
+  - marks impacted agents `recovering` or `offline`
+- `team_recovery_resolve_delegations`
+  - explicitly resolves selected open delegations as `cancelled`, `failed`, or `timed_out`
+  - records reconciliation notes and preserves auditability in runtime events
+  - does not silently resolve linked mailbox requests
+- `team_recovery_reassign_delegation`
+  - only works for `requested` or `accepted` delegations with no launched child session
+  - updates the target agent in SQLite
+  - emits a fresh mailbox delegation request for the new target
+  - can explicitly resolve prior unresolved mailbox requests tied to the old target
+- `team_recovery_resolve_mailbox`
+  - explicitly batch-resolves selected mailbox messages
+  - records recovery mailbox resolution events and leaves unselected messages untouched
+
+These tools intentionally do not invent execution outcomes. They only mutate runtime state when an operator chooses a recovery path.
 
 ## Child Session Delegation Support
 

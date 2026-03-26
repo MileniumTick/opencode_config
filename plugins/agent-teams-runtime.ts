@@ -75,6 +75,7 @@ type TaskRow = {
   status: string
   claimed_by: string | null
   claim_lease_expires_at: string | null
+  block_reason: string | null
   depends_on_task_id: string | null
   created_at: string
   updated_at: string
@@ -235,6 +236,15 @@ function parseMetadataJson(input?: string | null) {
 function truncateText(value: string, max = 4000) {
   if (value.length <= max) return value
   return `${value.slice(0, max - 3)}...`
+}
+
+function parseIdList(input: string) {
+  return [...new Set(
+    input
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean),
+  )]
 }
 
 function extractText(parts: Array<{ type: string; text?: string }>) {
@@ -514,6 +524,24 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
   function requireTask(teamId: string, taskId: string) {
     const row = db.query(`SELECT * FROM tasks WHERE id = $task_id AND team_id = $team_id`).get({ $task_id: taskId, $team_id: teamId }) as TaskRow | null
     if (!row) throw new Error(`Task ${taskId} not found in team ${teamId}`)
+    return row
+  }
+
+  function requireDelegation(teamId: string, delegationId: string) {
+    const row = db.query(`SELECT * FROM delegations WHERE id = $delegation_id AND team_id = $team_id`).get({
+      $delegation_id: delegationId,
+      $team_id: teamId,
+    }) as DelegationRow | null
+    if (!row) throw new Error(`Delegation ${delegationId} not found in team ${teamId}`)
+    return row
+  }
+
+  function requireMailboxMessage(teamId: string, messageId: string) {
+    const row = db.query(`SELECT * FROM mailbox_messages WHERE id = $message_id AND team_id = $team_id`).get({
+      $message_id: messageId,
+      $team_id: teamId,
+    }) as MailboxMessageRow | null
+    if (!row) throw new Error(`Mailbox message ${messageId} not found in team ${teamId}`)
     return row
   }
 
@@ -1112,7 +1140,7 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
 
     db.query(`
       UPDATE tasks
-      SET status = 'claimed', claimed_by = $claimed_by, claim_lease_expires_at = $claim_lease_expires_at, updated_at = $updated_at
+      SET status = 'claimed', claimed_by = $claimed_by, claim_lease_expires_at = $claim_lease_expires_at, block_reason = NULL, updated_at = $updated_at
       WHERE id = $task_id AND team_id = $team_id
     `).run({
       $claimed_by: claimant,
@@ -1164,7 +1192,7 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
 
     db.query(`
       UPDATE tasks
-      SET status = 'ready', claimed_by = NULL, claim_lease_expires_at = NULL, updated_at = $updated_at
+      SET status = 'ready', claimed_by = NULL, claim_lease_expires_at = NULL, block_reason = NULL, updated_at = $updated_at
       WHERE id = $task_id AND team_id = $team_id
     `).run({
       $updated_at: now,
@@ -1214,7 +1242,7 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
 
     db.query(`
       UPDATE tasks
-      SET status = 'blocked', block_reason = $block_reason, updated_at = $updated_at
+      SET status = 'blocked', claimed_by = NULL, claim_lease_expires_at = NULL, block_reason = $block_reason, updated_at = $updated_at
       WHERE id = $task_id AND team_id = $team_id
     `).run({
       $block_reason: reason ?? null,
@@ -1314,7 +1342,7 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
 
     db.query(`
       UPDATE tasks
-      SET status = 'done', updated_at = $updated_at
+      SET status = 'done', claimed_by = NULL, claim_lease_expires_at = NULL, block_reason = NULL, updated_at = $updated_at
       WHERE id = $task_id AND team_id = $team_id
     `).run({
       $updated_at: now,
@@ -1826,6 +1854,32 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
       const unfinishedGitWorkItems = db.query(`SELECT * FROM git_work_items WHERE team_id = $team_id AND status NOT IN ('merged','abandoned') ORDER BY updated_at DESC`).all({ $team_id: args.team_id }) as GitWorkItemRow[]
       const latestCheckpoint = db.query(`SELECT id, checkpoint_type, created_at FROM recovery_checkpoints WHERE team_id = $team_id ORDER BY created_at DESC LIMIT 1`).get({ $team_id: args.team_id }) as Record<string, string> | null
 
+      const staleAgentNames = new Set(staleAgents.map((agent) => agent.agent_name))
+      const registeredAgents = db.query(`SELECT agent_name, status, lease_expires_at FROM agents WHERE team_id = $team_id`).all({
+        $team_id: args.team_id,
+      }) as Array<Pick<AgentRow, "agent_name" | "status" | "lease_expires_at">>
+      const registeredAgentNames = new Set(registeredAgents.map((agent) => agent.agent_name))
+      const terminalTaskIds = new Set(
+        (db.query(`SELECT id FROM tasks WHERE team_id = $team_id AND status IN ('done','failed','cancelled')`).all({ $team_id: args.team_id }) as Array<{ id: string }>).map((row) => row.id),
+      )
+      const terminalDelegationIds = new Set(
+        (db.query(`SELECT id FROM delegations WHERE team_id = $team_id AND status IN ('completed','failed','cancelled','timed_out')`).all({ $team_id: args.team_id }) as Array<{ id: string }>).map((row) => row.id),
+      )
+
+      const orphanedDelegations = openDelegations.filter((delegation) => {
+        if (!registeredAgentNames.has(delegation.target_agent)) return true
+        if (staleAgentNames.has(delegation.target_agent)) return true
+        return delegation.status !== "running" && !delegation.child_session_id
+      })
+
+      const childSessionSyncCandidates = openDelegations.filter((delegation) => Boolean(delegation.child_session_id))
+      const reassignCandidates = openDelegations.filter((delegation) => !delegation.child_session_id && (staleAgentNames.has(delegation.target_agent) || !registeredAgentNames.has(delegation.target_agent)))
+      const mailboxResolutionCandidates = unresolvedMailbox.filter((message) => {
+        if (message.delegation_id && terminalDelegationIds.has(message.delegation_id)) return true
+        if (message.task_id && terminalTaskIds.has(message.task_id)) return true
+        return false
+      })
+
       return JSON.stringify({
         team_id: args.team_id,
         latest_checkpoint: latestCheckpoint,
@@ -1833,6 +1887,12 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
         stale_claims: staleClaims,
         unresolved_mailbox: unresolvedMailbox,
         open_delegations: openDelegations,
+        recovery_candidates: {
+          orphaned_delegations: orphanedDelegations,
+          delegation_child_session_sync: childSessionSyncCandidates,
+          delegation_reassign_review: reassignCandidates,
+          mailbox_resolution_review: mailboxResolutionCandidates,
+        },
         unfinished_git_work_items: unfinishedGitWorkItems,
       })
     },
@@ -1846,7 +1906,7 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
     for (const task of staleClaims) {
       db.query(`
         UPDATE tasks
-        SET status = 'ready', claimed_by = NULL, claim_lease_expires_at = NULL, updated_at = $updated_at
+        SET status = 'ready', claimed_by = NULL, claim_lease_expires_at = NULL, block_reason = NULL, updated_at = $updated_at
         WHERE id = $task_id
       `).run({
         $updated_at: now,
@@ -1905,6 +1965,288 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
         requeued_task_ids: result.staleClaims.map((row) => row.id),
         impacted_agents: result.impactedAgents,
         stale_agent_status: args.stale_agent_status,
+        note: args.note ?? null,
+      })
+    },
+  })
+
+  const recoveryResolveDelegationsTx = db.transaction((teamId: string, delegationIds: string[], nextStatus: string, targetAgentStatus: string, note?: string | null) => {
+    const updatedAt = nowIso()
+    const resolved: Array<DelegationRow & { linked_unresolved_mailbox_ids: string[] }> = []
+    const skipped: Array<{ delegation_id: string; reason: string }> = []
+
+    for (const delegationId of delegationIds) {
+      const row = requireDelegation(teamId, delegationId)
+      if (["completed", "failed", "cancelled", "timed_out"].includes(row.status)) {
+        skipped.push({ delegation_id: delegationId, reason: `Delegation already terminal in status ${row.status}` })
+        continue
+      }
+
+      assertDelegationTransition(row.status, nextStatus)
+      const summaryNote = note?.trim() ? `Recovery resolution: ${note.trim()}` : null
+      updateDelegationExecution({
+        delegation_id: row.id,
+        next_status: nextStatus,
+        result_summary: summaryNote,
+        launch_error: nextStatus === "failed" || nextStatus === "timed_out" ? summaryNote : row.launch_error,
+        completed_at: updatedAt,
+      })
+
+      if (targetAgentStatus !== "unchanged") {
+        maybeTouchRegisteredAgent(teamId, row.target_agent, { status: targetAgentStatus })
+      }
+
+      logEvent.run({
+        $id: randomUUID(),
+        $team_id: teamId,
+        $entity_type: "delegation",
+        $entity_id: row.id,
+        $event_type: `recovery.delegation.${nextStatus}`,
+        $payload_json: JSON.stringify({ previous_status: row.status, target_agent: row.target_agent, target_agent_status: targetAgentStatus, note: note ?? null }),
+        $created_at: updatedAt,
+      })
+
+      const linkedMailbox = db.query(`SELECT id FROM mailbox_messages WHERE team_id = $team_id AND delegation_id = $delegation_id AND status != 'resolved' ORDER BY created_at ASC`).all({
+        $team_id: teamId,
+        $delegation_id: row.id,
+      }) as Array<{ id: string }>
+      const updated = requireDelegation(teamId, row.id)
+      resolved.push({
+        ...updated,
+        linked_unresolved_mailbox_ids: linkedMailbox.map((message) => message.id),
+      })
+    }
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "team",
+      $entity_id: teamId,
+      $event_type: "recovery.delegations.resolved",
+      $payload_json: JSON.stringify({ delegation_ids: delegationIds, next_status: nextStatus, target_agent_status: targetAgentStatus, resolved_count: resolved.length, skipped_count: skipped.length, note: note ?? null }),
+      $created_at: updatedAt,
+    })
+
+    return { resolved, skipped }
+  })
+
+  const recoveryResolveDelegations = tool({
+    description: "Operational recovery action: explicitly resolve open delegations as cancelled, failed, or timed out",
+    args: {
+      team_id: tool.schema.string(),
+      delegation_ids: tool.schema.string().describe("Comma-separated delegation IDs to resolve"),
+      next_status: tool.schema.enum(["cancelled", "failed", "timed_out"]),
+      target_agent_status: tool.schema.enum(["unchanged", "idle", "recovering", "offline"]).default("unchanged"),
+      note: tool.schema.string().optional(),
+    },
+    async execute(args) {
+      requireTeam(args.team_id)
+      const delegationIds = parseIdList(args.delegation_ids)
+      if (delegationIds.length === 0) throw new Error("Provide at least one delegation ID")
+
+      const result = recoveryResolveDelegationsTx(args.team_id, delegationIds, args.next_status, args.target_agent_status, args.note ?? null)
+      return JSON.stringify({
+        team_id: args.team_id,
+        next_status: args.next_status,
+        target_agent_status: args.target_agent_status,
+        resolved: result.resolved,
+        skipped: result.skipped,
+        note: args.note ?? null,
+      })
+    },
+  })
+
+  const recoveryReassignDelegationTx = db.transaction((teamId: string, delegationId: string, newTargetAgent: string, resolvePriorMailbox: string, note?: string | null) => {
+    const row = requireDelegation(teamId, delegationId)
+    if (!["requested", "accepted"].includes(row.status)) {
+      throw new Error(`Delegation ${delegationId} can only be reassigned from requested or accepted state; current status is ${row.status}`)
+    }
+    if (row.child_session_id) {
+      throw new Error(`Delegation ${delegationId} already launched child session ${row.child_session_id}; use explicit resolution instead of reassignment`)
+    }
+    if (row.target_agent === newTargetAgent) {
+      throw new Error(`Delegation ${delegationId} already targets ${newTargetAgent}`)
+    }
+
+    const updatedAt = nowIso()
+    db.query(`
+      UPDATE delegations
+      SET target_agent = $target_agent,
+          status = 'requested',
+          result_summary = NULL,
+          updated_at = $updated_at
+      WHERE id = $delegation_id
+    `).run({
+      $target_agent: newTargetAgent,
+      $updated_at: updatedAt,
+      $delegation_id: delegationId,
+    })
+
+    let resolvedPriorMailboxIds: string[] = []
+    if (resolvePriorMailbox === "yes") {
+      const priorMailbox = db.query(`SELECT id FROM mailbox_messages WHERE team_id = $team_id AND delegation_id = $delegation_id AND status != 'resolved' ORDER BY created_at ASC`).all({
+        $team_id: teamId,
+        $delegation_id: delegationId,
+      }) as Array<{ id: string }>
+      resolvedPriorMailboxIds = priorMailbox.map((message) => message.id)
+      for (const message of priorMailbox) {
+        db.query(`
+          UPDATE mailbox_messages
+          SET status = 'resolved',
+              read_at = COALESCE(read_at, $updated_at),
+              resolved_at = $updated_at,
+              updated_at = $updated_at
+          WHERE id = $message_id
+        `).run({
+          $updated_at: updatedAt,
+          $message_id: message.id,
+        })
+
+        logEvent.run({
+          $id: randomUUID(),
+          $team_id: teamId,
+          $entity_type: "mailbox_message",
+          $entity_id: message.id,
+          $event_type: "recovery.mailbox.resolved",
+          $payload_json: JSON.stringify({ delegation_id: delegationId, reason: "delegation_reassigned", note: note ?? null }),
+          $created_at: updatedAt,
+        })
+      }
+    }
+
+    const messageId = randomUUID()
+    const reassignedBody = [
+      `Recovery reassigned delegation ${delegationId}.`,
+      note?.trim() ? `Operator note: ${note.trim()}` : null,
+      "Original delegation prompt:",
+      row.prompt,
+    ].filter(Boolean).join("\n\n")
+
+    db.query(`
+      INSERT INTO mailbox_messages (id, team_id, sender_agent, recipient_agent, task_id, delegation_id, message_type, subject, body, status, created_at, read_at, resolved_at, updated_at)
+      VALUES ($id, $team_id, $sender_agent, $recipient_agent, $task_id, $delegation_id, $message_type, $subject, $body, 'pending', $created_at, NULL, NULL, $updated_at)
+    `).run({
+      $id: messageId,
+      $team_id: teamId,
+      $sender_agent: row.source_agent,
+      $recipient_agent: newTargetAgent,
+      $task_id: row.task_id,
+      $delegation_id: row.id,
+      $message_type: "delegation_request",
+      $subject: `Recovery reassigned delegation for task ${row.task_id}`,
+      $body: reassignedBody,
+      $created_at: updatedAt,
+      $updated_at: updatedAt,
+    })
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "delegation",
+      $entity_id: row.id,
+      $event_type: "recovery.delegation.reassigned",
+      $payload_json: JSON.stringify({ previous_target_agent: row.target_agent, new_target_agent: newTargetAgent, mailbox_message_id: messageId, resolved_prior_mailbox_ids: resolvedPriorMailboxIds, note: note ?? null }),
+      $created_at: updatedAt,
+    })
+
+    const updated = requireDelegation(teamId, row.id)
+    return { updated, messageId, resolvedPriorMailboxIds }
+  })
+
+  const recoveryReassignDelegation = tool({
+    description: "Operational recovery action: reassign an unlaunched delegation to a new target agent and emit a fresh mailbox request",
+    args: {
+      team_id: tool.schema.string(),
+      delegation_id: tool.schema.string(),
+      new_target_agent: tool.schema.string(),
+      resolve_prior_mailbox: tool.schema.enum(["yes", "no"]).default("yes"),
+      note: tool.schema.string().optional(),
+    },
+    async execute(args) {
+      requireTeam(args.team_id)
+      const targetAgentIsKnown = await agentExists(args.new_target_agent)
+      if (!targetAgentIsKnown) {
+        throw new Error(`Target agent ${args.new_target_agent} is not registered in the current OpenCode configuration`)
+      }
+
+      const result = recoveryReassignDelegationTx(args.team_id, args.delegation_id, args.new_target_agent, args.resolve_prior_mailbox, args.note ?? null)
+      return JSON.stringify({
+        team_id: args.team_id,
+        delegation: result.updated,
+        recovery_mailbox_message_id: result.messageId,
+        resolved_prior_mailbox_ids: result.resolvedPriorMailboxIds,
+        note: args.note ?? null,
+      })
+    },
+  })
+
+  const recoveryResolveMailboxTx = db.transaction((teamId: string, messageIds: string[], note?: string | null) => {
+    const updatedAt = nowIso()
+    const resolved: MailboxMessageRow[] = []
+    const skipped: Array<{ message_id: string; reason: string }> = []
+
+    for (const messageId of messageIds) {
+      const row = requireMailboxMessage(teamId, messageId)
+      if (row.status === "resolved") {
+        skipped.push({ message_id: messageId, reason: "Mailbox message already resolved" })
+        continue
+      }
+
+      db.query(`
+        UPDATE mailbox_messages
+        SET status = 'resolved',
+            read_at = COALESCE(read_at, $updated_at),
+            resolved_at = $updated_at,
+            updated_at = $updated_at
+        WHERE id = $message_id
+      `).run({
+        $updated_at: updatedAt,
+        $message_id: messageId,
+      })
+
+      logEvent.run({
+        $id: randomUUID(),
+        $team_id: teamId,
+        $entity_type: "mailbox_message",
+        $entity_id: row.id,
+        $event_type: "recovery.mailbox.resolved",
+        $payload_json: JSON.stringify({ previous_status: row.status, task_id: row.task_id, delegation_id: row.delegation_id, note: note ?? null }),
+        $created_at: updatedAt,
+      })
+
+      resolved.push(requireMailboxMessage(teamId, row.id))
+    }
+
+    logEvent.run({
+      $id: randomUUID(),
+      $team_id: teamId,
+      $entity_type: "team",
+      $entity_id: teamId,
+      $event_type: "recovery.mailbox.batch_resolved",
+      $payload_json: JSON.stringify({ message_ids: messageIds, resolved_count: resolved.length, skipped_count: skipped.length, note: note ?? null }),
+      $created_at: updatedAt,
+    })
+
+    return { resolved, skipped }
+  })
+
+  const recoveryResolveMailbox = tool({
+    description: "Operational recovery action: batch-resolve mailbox messages selected during recovery review",
+    args: {
+      team_id: tool.schema.string(),
+      message_ids: tool.schema.string().describe("Comma-separated mailbox message IDs to resolve"),
+      note: tool.schema.string().optional(),
+    },
+    async execute(args) {
+      requireTeam(args.team_id)
+      const messageIds = parseIdList(args.message_ids)
+      if (messageIds.length === 0) throw new Error("Provide at least one mailbox message ID")
+
+      const result = recoveryResolveMailboxTx(args.team_id, messageIds, args.note ?? null)
+      return JSON.stringify({
+        team_id: args.team_id,
+        resolved: result.resolved,
+        skipped: result.skipped,
         note: args.note ?? null,
       })
     },
@@ -2221,6 +2563,9 @@ export const AgentTeamsRuntime: Plugin = async ({ client, directory }) => {
       team_checkpoint_latest: checkpointLatest,
       team_recovery_inspect: recoveryInspect,
       team_recovery_requeue_stale_claims: recoveryRequeueStaleClaims,
+      team_recovery_resolve_delegations: recoveryResolveDelegations,
+      team_recovery_reassign_delegation: recoveryReassignDelegation,
+      team_recovery_resolve_mailbox: recoveryResolveMailbox,
       team_git_work_item_upsert: gitWorkItemUpsert,
       team_git_work_item_list: gitWorkItemList,
       team_git_work_item_validate: gitWorkItemValidate,

@@ -19,7 +19,7 @@
 - ✅ implement task create and claim operations
 - ✅ add atomic task claim protection to prevent dual ownership
 - ✅ synchronize registered agent lease state during task claims when the claimant is known to the runtime
-- implement release, block, unblock, and complete operations
+- ✅ implement release, block, unblock, and complete operations
 - expose a board query model for lane, priority, assignee, and dependency views
 - add tests for concurrent claim attempts and lifecycle transitions
 
@@ -55,7 +55,9 @@
 - ✅ implement snapshot/checkpoint creation and latest-checkpoint lookup behavior
 - ✅ detect stale claims, stale agents, open delegations, unresolved mail, and unfinished git work for recovery inspection
 - ✅ define and implement operator-invoked requeue plus team-status recovery actions
-- record recovery events with reconciliation notes
+- ✅ record recovery events with reconciliation notes
+- ✅ add explicit delegation recovery actions for resolve and limited reassignment paths
+- ✅ add explicit mailbox batch-resolution actions for recovery cleanup
 - test interruption and restart behavior end to end
 
 ## Phase 7 - Git workflow enforcement
@@ -70,7 +72,7 @@
 
 - ✅ expose plugin tools for runtime startup, board inspection, delegation, child-session launch/sync, mailbox inspection, agent registry, git metadata, artifact links, and recovery execution
 - ✅ add status reporting for active agents, blocked work, unresolved messages, and recovery outcomes
-- provide operator-friendly error messages for policy violations and recovery conflicts
+- ✅ provide operator-friendly error messages for policy violations and recovery conflicts
 - ensure runtime entity IDs can be traced to Engram artifacts and Git context
 
 ## Phase 9 - Hardening and release readiness

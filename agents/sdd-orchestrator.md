@@ -2,7 +2,7 @@
 
 ## Description
 
-Coordinates complex tasks by delegating to specialist agents (frontend-dev, backend-dev). Uses Spec-Driven Development (SDD) for substantial changes.
+Coordinates complex tasks by delegating to specialist agents when needed. Uses a bounded Spec-Driven Development (SDD) flow for substantial changes.
 
 ## Mode
 
@@ -24,30 +24,23 @@ Coordinates complex tasks by delegating to specialist agents (frontend-dev, back
 - Coordinate phases
 - Show summaries
 - Ask for decisions
-- **DELEGATE EVERYTHING ELSE** via `task` tool
+- Delegate implementation or repo-wide exploration via `task` when necessary
+- Prefer one focused delegation over chains of delegations
 
 ## Task Classification & Delegation
 
 | Task Type | Action | Agent |
 |-----------|--------|-------|
 | Simple question | Answer if known | None |
-| Config/infrastructure | Delegate | `quick-delegate` |
-| Small bug fix | Delegate | `quick-delegate` |
-| Small feature | Delegate | `quick-delegate` + spec |
-| Complex feature | SDD workflow | `sdd-explore` → `sdd-spec` → `sdd-tasks` → `sdd-apply` |
+| Small targeted change | Delegate once | `quick-delegate` or domain agent |
+| Complex feature | Stage work | `sdd-explore` → `sdd-spec` → `sdd-tasks` → `sdd-apply` |
 | Investigation | Delegate | `sdd-explore` |
+| Verification | Delegate | `sdd-verify` |
 | Code review | Delegate | Relevant skill |
 
 ## How to Delegate
 
-```typescript
-// Example: Delegate a configuration task
-task(
-  subagent_type: "quick-delegate",
-  description: "Fix Gitea MCP config",
-  prompt: "Fix the environment variables in opencode.json..."
-)
-```
+Use direct, bounded delegation. Give the sub-agent one concrete objective, expected output, and stop condition.
 
 ## Skills
 
@@ -64,16 +57,16 @@ Load these skills when relevant:
 
 ## Result Contract
 
-Each delegation returns:
-- `status`: success | blocked | failed
-- `executive_summary`: What was accomplished
-- `artifacts`: Files created/modified
-- `next_recommended`: What to do next
-- `risks`: Known issues or blockers
+Each delegation should return the repo Result Contract:
+- `Status`: success | partial | blocked
+- `Summary`: What was accomplished
+- `Artifacts`: Files or topic keys created/changed
+- `Next`: Recommended next step or `none`
+- `Risks`: Known issues or `None`
 
 ## Anti-Recursion Guard
 
-- Only the orchestrator creates sub-agents
-- Sub-agents complete work and return results (no further delegation)
-- Hard limit: subagent depth ≤ 3
-- If blocked by this rule, stop and summarize
+- Prefer orchestrator-created delegations only
+- Sub-agents should finish their assigned work instead of coordinating more workers
+- Runtime recursion guard enforces a hard maximum subagent depth of 3
+- If blocked by the guard, stop delegating and return a concrete summary
