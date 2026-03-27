@@ -1,0 +1,57 @@
+{
+  "format_version": 1,
+  "generated_at": "2026-03-27T23:28:35.397Z",
+  "mode": "strict",
+  "kpis": {
+    "recovery_ops_success_rate_percent": 100,
+    "stale_claim_requeue_coverage_percent": 100,
+    "delegation_resolution_rate_percent": 100,
+    "mailbox_resolution_rate_percent": 100,
+    "stale_claim_requeue_latency_ms": 0,
+    "critical_breaches": []
+  },
+  "slos": {
+    "recovery_ops_success_rate_min_percent": 100,
+    "stale_claim_requeue_coverage_min_percent": 100,
+    "delegation_resolution_rate_min_percent": 100,
+    "stale_claim_requeue_latency_max_ms": 10000
+  },
+  "drill_evidence": {
+    "generated_at": "2026-03-27T23:28:35.397Z",
+    "team_id": "9a70e95c-6fa2-4212-9245-19d2387f9920",
+    "stale_task_id": "131f38fe-5909-41a8-967d-da659af006c5",
+    "done_task_id": "39e83baf-942b-4fa5-b89c-f42894953043",
+    "delegation_id": "ce631e95-f796-4143-be9d-02f2e483b81c",
+    "mailbox_message_id": "cd678c0d-85eb-48fa-bfc6-9401ea62958c",
+    "operations": {
+      "inspect_before": {
+        "latency_ms": 0,
+        "stale_claims": 1,
+        "open_delegations": 1,
+        "unresolved_mailbox": 2
+      },
+      "requeue_stale_claims": {
+        "latency_ms": 0,
+        "requeued_task_ids": [
+          "131f38fe-5909-41a8-967d-da659af006c5"
+        ]
+      },
+      "resolve_delegations": {
+        "latency_ms": 0,
+        "resolved_count": 1,
+        "skipped_count": 0
+      },
+      "resolve_mailbox": {
+        "latency_ms": 0,
+        "resolved_count": 1,
+        "skipped_count": 0
+      }
+    },
+    "invariants": {
+      "stale_task_ready_unclaimed": true,
+      "done_task_immutable": true
+    },
+    "pass": true,
+    "issues": []
+  }
+}

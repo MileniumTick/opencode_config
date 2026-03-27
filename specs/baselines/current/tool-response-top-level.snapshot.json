@@ -1,0 +1,450 @@
+{
+  "commands": {
+    "team_agent_heartbeat": {
+      "top_level_shape": {
+        "agent_name": "string",
+        "capabilities": "array",
+        "capabilities_json": "string",
+        "created_at": "string",
+        "current_task_id": "null",
+        "id": "string",
+        "last_heartbeat_at": "string",
+        "lease_expires_at": "string",
+        "role": "string",
+        "status": "string",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_agent_list": {
+      "top_level_shape": {
+        "agents": "array",
+        "team_id": "string",
+        "total": "number"
+      }
+    },
+    "team_agent_register": {
+      "top_level_shape": {
+        "agent_name": "string",
+        "capabilities": "array",
+        "capabilities_json": "string",
+        "created_at": "string",
+        "current_task_id": "null",
+        "id": "string",
+        "last_heartbeat_at": "string",
+        "lease_expires_at": "string",
+        "role": "string",
+        "status": "string",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_artifact_link_create": {
+      "top_level_shape": {
+        "artifact_kind": "string",
+        "artifact_system": "string",
+        "created_at": "string",
+        "entity_id": "string",
+        "entity_type": "string",
+        "id": "string",
+        "metadata": "null",
+        "metadata_json": "null",
+        "note": "string",
+        "reference_id": "string",
+        "team_id": "string",
+        "uri": "null"
+      }
+    },
+    "team_artifact_link_list": {
+      "top_level_shape": {
+        "artifact_links": "array",
+        "team_id": "string",
+        "total": "number"
+      }
+    },
+    "team_checkpoint_create": {
+      "top_level_shape": {
+        "checkpoint_type": "string",
+        "created_at": "string",
+        "id": "string",
+        "team_id": "string"
+      }
+    },
+    "team_checkpoint_latest": {
+      "top_level_shape": {
+        "checkpoint_type": "string",
+        "created_at": "string",
+        "id": "string",
+        "payload_json": "string",
+        "team_id": "string"
+      }
+    },
+    "team_delegation_create": {
+      "top_level_shape": {
+        "id": "string",
+        "mailbox_message_id": "string",
+        "note": "string",
+        "source_agent": "string",
+        "status": "string",
+        "target_agent": "string",
+        "task_id": "string",
+        "team_id": "string"
+      }
+    },
+    "team_delegation_launch": {
+      "top_level_shape": {
+        "child_message_id": "null",
+        "child_session_id": "string",
+        "child_session_title": "string",
+        "completed_at": "null",
+        "created_at": "string",
+        "id": "string",
+        "launch_error": "null",
+        "launched_at": "string",
+        "prompt": "string",
+        "result_summary": "null",
+        "source_agent": "string",
+        "status": "string",
+        "target_agent": "string",
+        "task_id": "string",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_delegation_sync": {
+      "top_level_shape": {
+        "child_message_id": "string",
+        "child_session_id": "string",
+        "child_session_title": "string",
+        "completed_at": "string",
+        "created_at": "string",
+        "id": "string",
+        "launch_error": "null",
+        "launched_at": "string",
+        "prompt": "string",
+        "result_summary": "string",
+        "source_agent": "string",
+        "status": "string",
+        "target_agent": "string",
+        "task_id": "string",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_delegation_transition": {
+      "top_level_shape": {
+        "child_message_id": "null",
+        "child_session_id": "null",
+        "child_session_title": "null",
+        "completed_at": "null",
+        "created_at": "string",
+        "id": "string",
+        "launch_error": "null",
+        "launched_at": "null",
+        "prompt": "string",
+        "result_summary": "null",
+        "source_agent": "string",
+        "status": "string",
+        "target_agent": "string",
+        "task_id": "string",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_git_work_item_list": {
+      "top_level_shape": {
+        "git_work_items": "array",
+        "team_id": "string",
+        "total": "number"
+      }
+    },
+    "team_git_work_item_upsert": {
+      "top_level_shape": {
+        "base_branch": "string",
+        "branch_name": "string",
+        "commit_batching_mode": "string",
+        "created_at": "string",
+        "id": "string",
+        "pr_number": "null",
+        "pr_target_branch": "string",
+        "pr_url": "null",
+        "status": "string",
+        "task_id": "string",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_git_work_item_validate": {
+      "top_level_shape": {
+        "current_branch": "null",
+        "current_branch_matches_recorded": "boolean",
+        "expected_target_branch": "string",
+        "git_errors": "array",
+        "git_repository_accessible": "boolean",
+        "git_work_item": "object",
+        "policy_valid": "boolean",
+        "recorded_branch_exists": "boolean",
+        "worktree_clean": "boolean"
+      }
+    },
+    "team_mailbox_list": {
+      "top_level_shape": {
+        "messages": "array",
+        "team_id": "string",
+        "total": "number"
+      }
+    },
+    "team_mailbox_send": {
+      "top_level_shape": {
+        "id": "string",
+        "status": "string"
+      }
+    },
+    "team_mailbox_transition": {
+      "top_level_shape": {
+        "body": "string",
+        "created_at": "string",
+        "delegation_id": "null",
+        "id": "string",
+        "message_type": "string",
+        "read_at": "string",
+        "recipient_agent": "string",
+        "resolved_at": "null",
+        "sender_agent": "string",
+        "status": "string",
+        "subject": "string",
+        "task_id": "null",
+        "team_id": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_recovery_inspect": {
+      "top_level_shape": {
+        "latest_checkpoint": "object",
+        "open_delegations": "array",
+        "recovery_candidates": "object",
+        "stale_agents": "array",
+        "stale_claims": "array",
+        "team_id": "string",
+        "unfinished_git_work_items": "array",
+        "unresolved_mailbox": "array"
+      }
+    },
+    "team_recovery_reassign_delegation": {
+      "top_level_shape": {
+        "delegation": "object",
+        "note": "string",
+        "recovery_mailbox_message_id": "string",
+        "resolved_prior_mailbox_ids": "array",
+        "team_id": "string"
+      }
+    },
+    "team_recovery_requeue_stale_claims": {
+      "top_level_shape": {
+        "impacted_agents": "array",
+        "note": "string",
+        "requeued_task_ids": "array",
+        "stale_agent_status": "string",
+        "team_id": "string"
+      }
+    },
+    "team_recovery_resolve_delegations": {
+      "top_level_shape": {
+        "next_status": "string",
+        "note": "string",
+        "resolved": "array",
+        "skipped": "array",
+        "target_agent_status": "string",
+        "team_id": "string"
+      }
+    },
+    "team_recovery_resolve_mailbox": {
+      "top_level_shape": {
+        "note": "string",
+        "resolved": "array",
+        "skipped": "array",
+        "team_id": "string"
+      }
+    },
+    "team_set_status": {
+      "top_level_shape": {
+        "branch_name": "null",
+        "created_at": "string",
+        "goal": "string",
+        "id": "string",
+        "name": "string",
+        "pr_target_branch": "string",
+        "status": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_start": {
+      "top_level_shape": {
+        "branch_name": "null",
+        "goal": "string",
+        "id": "string",
+        "name": "string",
+        "pr_target_branch": "string",
+        "runtime_db": "string",
+        "status": "string"
+      }
+    },
+    "team_status": {
+      "top_level_shape": {
+        "agents": "object",
+        "artifact_links": "number",
+        "branch_name": "null",
+        "created_at": "string",
+        "git_work_items": "number",
+        "goal": "string",
+        "id": "string",
+        "name": "string",
+        "open_delegations": "number",
+        "pr_target_branch": "string",
+        "runtime_db": "string",
+        "stale_agents": "number",
+        "status": "string",
+        "tasks": "object",
+        "updated_at": "string"
+      }
+    },
+    "team_task_block": {
+      "top_level_shape": {
+        "block_reason": "string",
+        "claim_lease_expires_at": "null",
+        "claimed_by": "null",
+        "created_at": "string",
+        "depends_on_task_id": "null",
+        "description": "string",
+        "id": "string",
+        "priority": "string",
+        "status": "string",
+        "team_id": "string",
+        "title": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_task_claim": {
+      "top_level_shape": {
+        "block_reason": "null",
+        "claim_lease_expires_at": "string",
+        "claimed_by": "string",
+        "created_at": "string",
+        "depends_on_task_id": "null",
+        "description": "string",
+        "id": "string",
+        "priority": "string",
+        "status": "string",
+        "team_id": "string",
+        "title": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_task_complete": {
+      "top_level_shape": {
+        "block_reason": "null",
+        "claim_lease_expires_at": "null",
+        "claimed_by": "null",
+        "created_at": "string",
+        "depends_on_task_id": "null",
+        "description": "string",
+        "id": "string",
+        "priority": "string",
+        "status": "string",
+        "team_id": "string",
+        "title": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_task_create": {
+      "top_level_shape": {
+        "id": "string",
+        "priority": "string",
+        "status": "string",
+        "team_id": "string",
+        "title": "string"
+      }
+    },
+    "team_task_list": {
+      "top_level_shape": {
+        "tasks": "array",
+        "team_id": "string",
+        "total": "number"
+      }
+    },
+    "team_task_release": {
+      "top_level_shape": {
+        "block_reason": "null",
+        "claim_lease_expires_at": "null",
+        "claimed_by": "null",
+        "created_at": "string",
+        "depends_on_task_id": "null",
+        "description": "string",
+        "id": "string",
+        "priority": "string",
+        "status": "string",
+        "team_id": "string",
+        "title": "string",
+        "updated_at": "string"
+      }
+    },
+    "team_task_unblock": {
+      "top_level_shape": {
+        "block_reason": "null",
+        "claim_lease_expires_at": "null",
+        "claimed_by": "null",
+        "created_at": "string",
+        "depends_on_task_id": "null",
+        "description": "string",
+        "id": "string",
+        "priority": "string",
+        "status": "string",
+        "team_id": "string",
+        "title": "string",
+        "updated_at": "string"
+      }
+    }
+  },
+  "coverage": {
+    "coverage_percent": 100,
+    "covered_commands": [
+      "team_agent_heartbeat",
+      "team_agent_list",
+      "team_agent_register",
+      "team_artifact_link_create",
+      "team_artifact_link_list",
+      "team_checkpoint_create",
+      "team_checkpoint_latest",
+      "team_delegation_create",
+      "team_delegation_launch",
+      "team_delegation_sync",
+      "team_delegation_transition",
+      "team_git_work_item_list",
+      "team_git_work_item_upsert",
+      "team_git_work_item_validate",
+      "team_mailbox_list",
+      "team_mailbox_send",
+      "team_mailbox_transition",
+      "team_recovery_inspect",
+      "team_recovery_reassign_delegation",
+      "team_recovery_requeue_stale_claims",
+      "team_recovery_resolve_delegations",
+      "team_recovery_resolve_mailbox",
+      "team_set_status",
+      "team_start",
+      "team_status",
+      "team_task_block",
+      "team_task_claim",
+      "team_task_complete",
+      "team_task_create",
+      "team_task_list",
+      "team_task_release",
+      "team_task_unblock"
+    ],
+    "covered_tools": 32,
+    "missing_commands": [],
+    "total_team_tools": 32
+  },
+  "format_version": 2,
+  "source": "runtime live execution"
+}

@@ -1,0 +1,73 @@
+{
+  "format_version": 1,
+  "generated_at": "2026-03-27T23:28:35.710Z",
+  "verification_chain": [
+    "verify:runtime:baseline",
+    "verify:runtime:gates",
+    "verify:runtime:strict",
+    "verify:runtime:smoke"
+  ],
+  "source_dir": "specs/baselines/current",
+  "checksums": [
+    {
+      "file": "specs/baselines/current/tool-args-schema.snapshot.json",
+      "sha256": "6f1e43ac990c4c226257132e77c413dca1c3230db0761063934ed7cb1006c5fb",
+      "bytes": 33438
+    },
+    {
+      "file": "specs/baselines/current/tool-response-top-level.snapshot.json",
+      "sha256": "665262899d2a532434af3add45ff0c6d561f532cca127aaa365d2134a3632e98",
+      "bytes": 12272
+    },
+    {
+      "file": "specs/baselines/current/runtime-ddl-baseline.json",
+      "sha256": "b25e76436d895e42d7cbf61b676e5692f7311a046da3bec54ad7f26267ae5b5d",
+      "bytes": 7641
+    },
+    {
+      "file": "specs/baselines/current/runtime-ddl.diff.json",
+      "sha256": "bbed44f98c2e7618dfe925dca3631407a0e4f7901f2355eb995992727e6adee6",
+      "bytes": 129
+    },
+    {
+      "file": "specs/baselines/current/task-state-drift.evidence.json",
+      "sha256": "ebac783f3ec0bc370a43f8b32cbb0eecf615402ba4b0cdabaf1eb295b8fcb2ea",
+      "bytes": 296
+    },
+    {
+      "file": "specs/baselines/current/compliance-gates.report.json",
+      "sha256": "9daed28a0c86bc9899224bdc1ec29f66ea5d423eedf9cff7e1068d8cf298afa9",
+      "bytes": 5144
+    },
+    {
+      "file": "specs/baselines/current/compliance-gates.report.md",
+      "sha256": "681a6b4b1f27c2f87343ef985f39c6f639c9524576b1214b073df832eca2035f",
+      "bytes": 2785
+    },
+    {
+      "file": "specs/baselines/current/compliance-gates.report.strict.json",
+      "sha256": "9daed28a0c86bc9899224bdc1ec29f66ea5d423eedf9cff7e1068d8cf298afa9",
+      "bytes": 5144
+    },
+    {
+      "file": "specs/baselines/current/compliance-gates.report.strict.md",
+      "sha256": "681a6b4b1f27c2f87343ef985f39c6f639c9524576b1214b073df832eca2035f",
+      "bytes": 2785
+    },
+    {
+      "file": "specs/baselines/current/runtime-observability.kpi.json",
+      "sha256": "2915d05c0ff8bc681624530e1759a1a29e0d4adfec99343a8bde3be3d6103a43",
+      "bytes": 1669
+    },
+    {
+      "file": "specs/baselines/current/runtime-recovery-drill.evidence.json",
+      "sha256": "399734e54a83e28603ec8e08b540d5d9752f9d0be37e10e996d044ebf32f4e18",
+      "bytes": 1178
+    },
+    {
+      "file": "specs/baselines/current/baseline-summary.json",
+      "sha256": "599f6225ca021c07a4f7b4c1b37d958d030475caf1c21c80316d6d8d62f4997f",
+      "bytes": 288
+    }
+  ]
+}

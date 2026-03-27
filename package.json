@@ -1,6 +1,15 @@
 {
+  "scripts": {
+    "verify:runtime:baseline": "bun scripts/week3/contract-parity-baseline.ts",
+    "verify:runtime:gates": "bun scripts/week3/contract-parity-gates.ts",
+    "verify:runtime:strict": "bun scripts/week4/contract-parity-strict.ts",
+    "verify:runtime:smoke": "bun test plugins/agent-teams-runtime.smoke.test.ts",
+    "verify:runtime:release": "bun scripts/week4/verify-runtime-release.ts",
+    "verify:runtime:package": "bun scripts/week4/package-runtime-release-evidence.ts",
+    "verify:runtime": "bun run verify:runtime:release"
+  },
   "dependencies": {
-    "@opencode-ai/plugin": "1.3.2",
+    "@opencode-ai/plugin": "1.3.3",
     "bun-types": "latest"
   }
 }

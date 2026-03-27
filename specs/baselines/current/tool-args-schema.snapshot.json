@@ -1,0 +1,1266 @@
+{
+  "format_version": 1,
+  "source": "runtime live introspection",
+  "tool_count": 32,
+  "tools": [
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "agent_name": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "current_task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "lease_minutes": {
+            "default": 15,
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "number"
+          },
+          "status": {
+            "enum": [
+              "idle",
+              "busy",
+              "waiting",
+              "offline",
+              "recovering"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "agent_name",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Renew agent heartbeat and lease state in the runtime registry",
+      "name": "team_agent_heartbeat"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "idle",
+              "busy",
+              "waiting",
+              "offline",
+              "recovering"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "List registered runtime agents for a team",
+      "name": "team_agent_list"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "agent_name": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "capabilities": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "current_task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "lease_minutes": {
+            "default": 15,
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "number"
+          },
+          "role": {
+            "default": "worker",
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "status": {
+            "default": "idle",
+            "enum": [
+              "idle",
+              "busy",
+              "waiting",
+              "offline",
+              "recovering"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "agent_name",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Register or refresh an agent in the runtime registry with lease metadata",
+      "name": "team_agent_register"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "artifact_kind": {
+            "default": "artifact",
+            "enum": [
+              "checkpoint",
+              "summary",
+              "artifact",
+              "observation",
+              "session_summary"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "artifact_system": {
+            "default": "engram",
+            "enum": [
+              "engram",
+              "runtime",
+              "external"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "entity_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "entity_type": {
+            "enum": [
+              "team",
+              "agent",
+              "task",
+              "delegation",
+              "mailbox_message",
+              "checkpoint",
+              "git_work_item"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "enum"
+          },
+          "metadata_json": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "reference_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "uri": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "entity_id",
+          "entity_type",
+          "reference_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Persist an artifact or checkpoint link for a runtime entity. Use this to connect runtime state to Engram records explicitly.",
+      "name": "team_artifact_link_create"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "entity_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "entity_type": {
+            "enum": [
+              "team",
+              "agent",
+              "task",
+              "delegation",
+              "mailbox_message",
+              "checkpoint",
+              "git_work_item"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "List artifact links for a team or runtime entity",
+      "name": "team_artifact_link_list"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "checkpoint_type": {
+            "default": "manual",
+            "enum": [
+              "manual",
+              "verify",
+              "archive",
+              "recovery",
+              "phase_boundary"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Create a runtime recovery checkpoint snapshot for a team",
+      "name": "team_checkpoint_create"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Get the latest recovery checkpoint for a team",
+      "name": "team_checkpoint_latest"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "prompt": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "source_agent": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "target_agent": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "prompt",
+          "source_agent",
+          "target_agent",
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Create a real runtime delegation record tied to a task. This records intent and state without faking execution.",
+      "name": "team_delegation_create"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "delegation_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "delegation_id"
+        ],
+        "type": "object"
+      },
+      "description": "Launch a real child-session-backed delegation for an existing runtime delegation",
+      "name": "team_delegation_launch"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "delegation_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "delegation_id"
+        ],
+        "type": "object"
+      },
+      "description": "Synchronize a delegation record with its real child session outcome",
+      "name": "team_delegation_sync"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "delegation_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "next_status": {
+            "enum": [
+              "accepted",
+              "running",
+              "completed",
+              "failed",
+              "cancelled",
+              "timed_out"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "enum"
+          },
+          "result_summary": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "delegation_id",
+          "next_status"
+        ],
+        "type": "object"
+      },
+      "description": "Advance a delegation state in the runtime foundation without faking execution",
+      "name": "team_delegation_transition"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "planned",
+              "in_progress",
+              "ready_for_review",
+              "pr_open",
+              "merged",
+              "abandoned"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "List persisted git work item metadata for a team",
+      "name": "team_git_work_item_list"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "base_branch": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "branch_name": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "commit_batching_mode": {
+            "default": "single",
+            "enum": [
+              "single",
+              "multiple"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "pr_number": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "number"
+          },
+          "pr_target_branch": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "pr_url": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "status": {
+            "default": "planned",
+            "enum": [
+              "planned",
+              "in_progress",
+              "ready_for_review",
+              "pr_open",
+              "merged",
+              "abandoned"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "branch_name",
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Persist git branch and PR target metadata for a runtime task",
+      "name": "team_git_work_item_upsert"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "git_work_item_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "description": "Validate persisted git work item policy against live repository state",
+      "name": "team_git_work_item_validate"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "recipient_agent": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "read",
+              "resolved"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "List runtime mailbox messages for a recipient or team",
+      "name": "team_mailbox_list"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "body": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "delegation_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "message_type": {
+            "default": "info",
+            "enum": [
+              "info",
+              "blocking",
+              "approval",
+              "recovery",
+              "delegation_request",
+              "artifact_ready"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "recipient_agent": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "sender_agent": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "subject": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "body",
+          "recipient_agent",
+          "sender_agent",
+          "subject",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Send a runtime mailbox message between agents",
+      "name": "team_mailbox_send"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "message_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "next_status": {
+            "enum": [
+              "read",
+              "resolved"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "enum"
+          }
+        },
+        "required": [
+          "message_id",
+          "next_status"
+        ],
+        "type": "object"
+      },
+      "description": "Mark a mailbox message as read or resolved",
+      "name": "team_mailbox_transition"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Inspect stale agents and claims, unresolved mailbox, open delegations, and unfinished git work items for recovery planning",
+      "name": "team_recovery_inspect"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "delegation_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "new_target_agent": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "resolve_prior_mailbox": {
+            "default": "yes",
+            "enum": [
+              "yes",
+              "no"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "delegation_id",
+          "new_target_agent",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Operational recovery action: reassign an unlaunched delegation to a new target agent and emit a fresh mailbox request",
+      "name": "team_recovery_reassign_delegation"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "stale_agent_status": {
+            "default": "recovering",
+            "enum": [
+              "recovering",
+              "offline"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Operational recovery action: requeue stale claimed work and mark impacted agents recovering or offline",
+      "name": "team_recovery_requeue_stale_claims"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "delegation_ids": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "next_status": {
+            "enum": [
+              "cancelled",
+              "failed",
+              "timed_out"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "enum"
+          },
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "target_agent_status": {
+            "default": "unchanged",
+            "enum": [
+              "unchanged",
+              "idle",
+              "recovering",
+              "offline"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "delegation_ids",
+          "next_status",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Operational recovery action: explicitly resolve open delegations as cancelled, failed, or timed out",
+      "name": "team_recovery_resolve_delegations"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "message_ids": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "message_ids",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Operational recovery action: batch-resolve mailbox messages selected during recovery review",
+      "name": "team_recovery_resolve_mailbox"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "note": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "paused",
+              "recovering",
+              "archived"
+            ],
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Set an explicit runtime team status such as recovering or active",
+      "name": "team_set_status"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "branch_name": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "goal": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "name": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "goal",
+          "name"
+        ],
+        "type": "object"
+      },
+      "description": "Create a new agent teams runtime entry for the current project",
+      "name": "team_start"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "description": "Get summary status for an agent teams runtime",
+      "name": "team_status"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "reason": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Mark a task as blocked with an optional reason",
+      "name": "team_task_block"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "claimant": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "lease_minutes": {
+            "default": 15,
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "number"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "claimant",
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Claim a runtime task exclusively for a worker or agent",
+      "name": "team_task_claim"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Mark a task as done, release the agent, and cascade to dependent tasks",
+      "name": "team_task_complete"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "depends_on_task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "description": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "priority": {
+            "default": "medium",
+            "enum": [
+              "urgent",
+              "high",
+              "medium",
+              "low"
+            ],
+            "has_default": true,
+            "nullable": false,
+            "required": false,
+            "schema_type": "enum"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "title": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "team_id",
+          "title"
+        ],
+        "type": "object"
+      },
+      "description": "Create a shared runtime task for an agent team",
+      "name": "team_task_create"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "status": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "List runtime tasks for an agent team",
+      "name": "team_task_list"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "reason": {
+            "has_default": false,
+            "nullable": false,
+            "required": false,
+            "schema_type": "string"
+          },
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Release a claimed task back to the pool",
+      "name": "team_task_release"
+    },
+    {
+      "args": {
+        "additional_properties": false,
+        "properties": {
+          "task_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          },
+          "team_id": {
+            "has_default": false,
+            "nullable": false,
+            "required": true,
+            "schema_type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "team_id"
+        ],
+        "type": "object"
+      },
+      "description": "Unblock a blocked task and return it to the ready pool",
+      "name": "team_task_unblock"
+    }
+  ]
+}

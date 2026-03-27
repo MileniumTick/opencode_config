@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-03-27T23:28:35.055Z",
+  "output_dir": "/home/josue/.config/opencode/specs/baselines/current",
+  "tool_count": 32,
+  "task_state_drift": {
+    "missing_in_runtime": 0,
+    "extra_in_runtime": 0,
+    "transition_mismatches": 0
+  },
+  "ddl_drift_detected": false
+}

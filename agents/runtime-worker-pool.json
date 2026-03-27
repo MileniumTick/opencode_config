@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "selection_strategy": "least-busy",
+  "workers": [
+    {
+      "agent_name": "backend-dev",
+      "role": "worker",
+      "capabilities": ["backend", "api", "database", "runtime", "delegation"]
+    },
+    {
+      "agent_name": "frontend-dev",
+      "role": "worker",
+      "capabilities": ["frontend", "ui", "react", "testing", "delegation"]
+    },
+    {
+      "agent_name": "sdd-apply",
+      "role": "worker",
+      "capabilities": ["implementation", "code-change", "spec-driven", "delegation"]
+    }
+  ]
+}

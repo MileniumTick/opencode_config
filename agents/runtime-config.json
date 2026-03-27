@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "worker_pool_file": "./agents/runtime-worker-pool.json",
+  "selection_strategy": "least-busy"
+}

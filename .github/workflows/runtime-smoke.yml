@@ -1,0 +1,90 @@
+name: Runtime Smoke
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  runtime-smoke:
+    runs-on: ubuntu-latest
+    env:
+      # Default is blocking. Any bypass must be explicit + audited.
+      RUNTIME_STRICT_BYPASS: ${{ vars.RUNTIME_STRICT_BYPASS != '' && vars.RUNTIME_STRICT_BYPASS || '0' }}
+      RUNTIME_STRICT_BYPASS_REASON: ${{ vars.RUNTIME_STRICT_BYPASS_REASON != '' && vars.RUNTIME_STRICT_BYPASS_REASON || '' }}
+      RUNTIME_STRICT_BYPASS_TICKET: ${{ vars.RUNTIME_STRICT_BYPASS_TICKET != '' && vars.RUNTIME_STRICT_BYPASS_TICKET || '' }}
+      RUNTIME_STRICT_BYPASS_APPROVED_BY: ${{ vars.RUNTIME_STRICT_BYPASS_APPROVED_BY != '' && vars.RUNTIME_STRICT_BYPASS_APPROVED_BY || '' }}
+      RUNTIME_STRICT_BYPASS_EXPIRES_AT: ${{ vars.RUNTIME_STRICT_BYPASS_EXPIRES_AT != '' && vars.RUNTIME_STRICT_BYPASS_EXPIRES_AT || '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate strict bypass metadata
+        run: |
+          if [ "$RUNTIME_STRICT_BYPASS" != "1" ]; then
+            exit 0
+          fi
+
+          required=(
+            "RUNTIME_STRICT_BYPASS_REASON:$RUNTIME_STRICT_BYPASS_REASON"
+            "RUNTIME_STRICT_BYPASS_TICKET:$RUNTIME_STRICT_BYPASS_TICKET"
+            "RUNTIME_STRICT_BYPASS_APPROVED_BY:$RUNTIME_STRICT_BYPASS_APPROVED_BY"
+            "RUNTIME_STRICT_BYPASS_EXPIRES_AT:$RUNTIME_STRICT_BYPASS_EXPIRES_AT"
+          )
+
+          missing=()
+          for entry in "${required[@]}"; do
+            key="${entry%%:*}"
+            value="${entry#*:}"
+            if [ -z "$value" ]; then
+              missing+=("$key")
+            fi
+          done
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "RUNTIME_STRICT_BYPASS=1 requires audit metadata: ${missing[*]}"
+            exit 1
+          fi
+
+          if ! date -u -d "$RUNTIME_STRICT_BYPASS_EXPIRES_AT" >/dev/null 2>&1; then
+            echo "RUNTIME_STRICT_BYPASS_EXPIRES_AT must be a valid ISO-8601 datetime"
+            exit 1
+          fi
+
+          expires_epoch=$(date -u -d "$RUNTIME_STRICT_BYPASS_EXPIRES_AT" +%s)
+          now_epoch=$(date -u +%s)
+          if [ "$expires_epoch" -le "$now_epoch" ]; then
+            echo "RUNTIME_STRICT_BYPASS_EXPIRES_AT must be in the future"
+            exit 1
+          fi
+
+      - name: Runtime release verification chain
+        run: |
+          bun run verify:runtime:release
+
+      - name: Runtime strict bypass notice
+        if: env.RUNTIME_STRICT_BYPASS == '1'
+        run: |
+          echo "Runtime strict bypass enabled (explicit + audited)."
+          echo "Bypass reason: $RUNTIME_STRICT_BYPASS_REASON"
+          echo "Bypass ticket: $RUNTIME_STRICT_BYPASS_TICKET"
+          echo "Bypass approved_by: $RUNTIME_STRICT_BYPASS_APPROVED_BY"
+          echo "Bypass expires_at: $RUNTIME_STRICT_BYPASS_EXPIRES_AT"
+
+      - name: Package runtime release evidence
+        if: always()
+        run: bun run verify:runtime:package
+
+      - name: Upload runtime parity artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-parity-artifacts
+          path: |
+            specs/baselines/current/
+            artifacts/runtime-release/
