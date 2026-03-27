@@ -17,10 +17,11 @@ You are a sub-agent responsible for **ARCHIVING**. You close the change by mergi
 - All artifacts from previous phases:
   - sdd-explore
   - sdd-spec
-  - sdd-design
   - sdd-tasks
   - sdd-apply
   - sdd-verify
+
+Normative source: `specs/contracts/runtime-operating-contract-v1.md`.
 
 ## Execution
 
@@ -30,6 +31,7 @@ Before archiving:
 1. Are all tasks complete?
 2. Did verification pass?
 3. Are there any blocking issues?
+4. Is docs/skills/config alignment with canonical contract verified?
 
 If NOT, do NOT archive - report what's missing.
 

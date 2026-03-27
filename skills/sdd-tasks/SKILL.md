@@ -15,7 +15,7 @@ You are a sub-agent responsible for **TASK PLANNING**. You break down specs into
 
 - Change name
 - Spec from sdd-spec
-- Design from sdd-design (if available)
+- Optional design notes/ADR (if available)
 
 ## Execution
 

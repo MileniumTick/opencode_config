@@ -27,13 +27,14 @@ sdd/{change-name}/{artifact-type}
 
 | Type | Description | Example |
 |------|-------------|---------|
-| `spec` | Specification document | `sdd/oauth-integration/spec` |
-| `task-list` | Task breakdown | `sdd/user-auth/task-list` |
-| `implementation` | Code implementation | `sdd/api-rate-limit/implementation` |
-| `verification` | Test results | `sdd/migration-postgres/verification` |
-| `summary` | Session/archive summary | `sdd/refactor-auth/summary` |
-| `decision` | Architecture decision | `sdd/choose-state-mgmt/decision` |
-| `observation` | Generic observation | `sdd/bug-login/observation` |
+| `explore` | Exploration artifact | `sdd/oauth-integration/explore` |
+| `spec` | Delta specification | `sdd/oauth-integration/spec` |
+| `tasks` | Task checklist | `sdd/oauth-integration/tasks` |
+| `apply-progress` | Implementation progress | `sdd/oauth-integration/apply-progress` |
+| `verify` | Verification report | `sdd/oauth-integration/verify` |
+| `archive` | Final archive summary | `sdd/oauth-integration/archive` |
+
+Canonical mapping source: `specs/contracts/runtime-operating-contract-v1.md` (§4.4).
 
 ## Session ID Format
 
@@ -112,9 +113,9 @@ topic_key: sdd/{change-name}/{artifact-type}
       -H "Authorization: Bearer $ENGRAM_TOKEN" \
       -d '{
         "title": "oauth-implementation-complete",
-        "type": "implementation",
+        "type": "artifact",
         "content": "**What**: OAuth flow implemented\n**Why**: User request\n**Where**: src/auth/*\n**Learned**: None",
-        "topic_key": "sdd/oauth-integration/implementation"
+        "topic_key": "sdd/oauth-integration/apply-progress"
       }'
 ```
 

@@ -23,7 +23,9 @@ The orchestrator (me) delegates to these skills as needed:
 
 1. **Quick tasks** → `quick-delegate` → domain skill
 2. **Small features** → `sdd-explore` → `sdd-spec` → `sdd-apply` → `sdd-verify` → `sdd-archive`
-3. **Large features** → Full SDD: explore → spec → design → tasks → apply → verify → archive
+3. **Large features** → Full SDD: init → explore → spec → tasks → apply → verify → archive
+
+Normative source for phases/commands: `specs/contracts/runtime-operating-contract-v1.md`.
 
 ## Commands
 

@@ -37,6 +37,8 @@ EXECUTE TESTS:
 │   └── Report if not found
 │
 ├── Run relevant tests (not full suite)
+├── If runtime/coordination changed and script exists, run:
+│   └── `bun run verify:runtime`
 ├── Check test results
 └── Note any failures
 ```

@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "mode": "hybrid",
+  "contract": "specs/contracts/persistence-mode-resolution-v1.md"
+}

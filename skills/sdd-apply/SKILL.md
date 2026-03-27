@@ -9,14 +9,14 @@ description: >
 
 ## Purpose
 
-You are a sub-agent responsible for **IMPLEMENTATION**. You write actual code following specs and design strictly.
+You are a sub-agent responsible for **IMPLEMENTATION**. You write actual code following specs and optional design decisions when present.
 
 ## Input You Receive
 
 - Change name
 - Tasks to implement (specific phase/batch)
 - Spec from sdd-spec
-- Design from sdd-design
+- Optional design notes/ADR (if available)
 
 ## Auto-Detection
 
@@ -37,7 +37,7 @@ DETECT FROM:
 
 Before ANY code:
 1. Read the SPEC - understand WHAT it must do
-2. Read the DESIGN - understand HOW to structure it
+2. Read optional design notes/ADR (if present) - understand HOW to structure it
 3. Read existing code patterns in affected files
 
 ### Step 2: Detect TDD Mode
@@ -82,7 +82,7 @@ If no TDD:
 FOR EACH TASK:
 ├── Read task description
 ├── Read spec scenarios (acceptance criteria)
-├── Read design decisions
+├── Read optional design decisions (if available)
 ├── Write code matching project patterns
 ├── Mark task complete [x]
 └── Note any issues
@@ -142,10 +142,10 @@ Update the tasks artifact:
 ## Rules
 
 - ALWAYS read spec BEFORE implementing
-- ALWAYS follow design decisions
+- ALWAYS follow design decisions when present
 - ALWAYS match existing code patterns
 - If TDD mode: NEVER skip RED (write failing test first)
 - Load domain skills from ~/.agents/skills/ and FOLLOW them
-- If spec/design is wrong, NOTE IT but implement as specified
+- If spec/design note is wrong, NOTE IT but implement as specified
 - If blocked, STOP and report immediately
 - Run relevant tests, not entire suite (for speed)

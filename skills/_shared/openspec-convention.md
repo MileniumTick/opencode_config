@@ -30,7 +30,8 @@ All artifacts are stored relative to the project root:
 
 ```
 .atl/changes/{change-name}/
-├── spec.md                  # Specification document
+├── explore.md               # Exploration document
+├── spec.md                  # Delta specification
 ├── tasks.md                 # Task breakdown
 ├── implementation/          # Code changes
 │   ├── file1.ts
@@ -87,11 +88,14 @@ All artifacts are stored relative to the project root:
   "status": "in_progress",
   "persistence_mode": "hybrid",
   "artifacts": [
+    { "type": "explore", "path": "explore.md" },
     { "type": "spec", "path": "spec.md" },
-    { "type": "task-list", "path": "tasks.md" }
+    { "type": "tasks", "path": "tasks.md" }
   ]
 }
 ```
+
+Canonical mapping source: `specs/contracts/runtime-operating-contract-v1.md` (§4.4).
 
 ## Archive Layout
 

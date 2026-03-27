@@ -25,6 +25,9 @@ Las skills se cargan desde dos ubicaciones reales en esta máquina:
 
 ## Sub-Agentes SDD (Spec-Driven Development)
 
+Contrato normativo (canónico): `specs/contracts/runtime-operating-contract-v1.md`.
+Si hay conflicto entre docs/skills, ese contrato prevalece.
+
 Flujo práctico para tareas sustanciales en este repo:
 
 ```
@@ -125,6 +128,7 @@ User: "Fix el bug del login"
 ### SDD Completo (tareas sustanciales)
 ```
 User: "Quiero agregar OAuth al app"
+→ /sdd-init
 → /sdd-explore oauth
 → /sdd-spec oauth
 → /sdd-tasks
@@ -195,18 +199,22 @@ Sistema de persistencia con 4 modos configurables. Los sub-agentes guardan y rec
 
 | Modo | Almacenamiento | Descripción |
 |------|----------------|-------------|
-| `engram` | Engram memory | Valor por defecto, máxima persistencia |
+| `engram` | Engram memory | Persistencia semántica prioritaria |
 | `openspec` | Filesystem (.atl/) | Cuando Engram no está disponible |
-| `hybrid` | Ambos | Redundante, máxima seguridad |
+| `hybrid` | Ambos | Valor por defecto recomendado (resiliente) |
 | `none` | Ninguno | Stateless, solo testing |
 
 ### Resolución de Modo
 
 El modo se resuelve en este orden (el primero que encuentra):
 1. Variable de entorno: `PERSISTENCE_MODE`
-2. Configuración de proyecto: `.opencode/persistence.yaml`
-3. Configuración global: `~/.config/opencode/persistence.yaml`
-4. Default: `engram`
+2. Configuración de proyecto: `agents/persistence-mode.json` (`mode`)
+3. Configuración global: `~/.config/opencode/persistence.json` (`mode`)
+4. Default: `hybrid`
+
+Compatibilidad legacy (transitoria):
+- `.opencode/persistence.yaml`
+- `~/.config/opencode/persistence.yaml`
 
 ### Artefactos SDD
 

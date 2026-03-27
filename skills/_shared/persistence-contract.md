@@ -10,9 +10,13 @@ description: Contract for cross-session persistence in agent workflows
 Persistence mode is resolved in the following priority order:
 
 1. **Environment Variable** — `PERSISTENCE_MODE` env var
-2. **Project Config** — `.opencode.json` or `opencode.json` in project root
-3. **Global Config** — `~/.config/opencode/persistence.json`
+2. **Project Config** — `agents/persistence-mode.json` (`mode`)
+3. **Global Config** — `~/.config/opencode/persistence.json` (`mode`)
 4. **Default** — `hybrid`
+
+Legacy compatibility (transitional, non-canonical):
+- `.opencode/persistence.yaml`
+- `~/.config/opencode/persistence.yaml`
 
 ### Resolution Algorithm
 
@@ -24,13 +28,13 @@ function resolvePersistenceMode(): PersistenceMode {
   }
 
   const projectConfig = readProjectConfig()
-  if (projectConfig?.persistence?.mode) {
-    return projectConfig.persistence.mode
+  if (projectConfig?.mode) {
+    return projectConfig.mode
   }
 
   const globalConfig = readGlobalConfig()
-  if (globalConfig?.persistence?.mode) {
-    return globalConfig.persistence.mode
+  if (globalConfig?.mode) {
+    return globalConfig.mode
   }
 
   return 'hybrid'
@@ -174,26 +178,15 @@ All persistence operations MUST validate:
 
 ```json
 {
-  "persistence": {
-    "mode": "hybrid",
-    "engram": {
-      "enabled": true,
-      "project": "opencode"
-    },
-    "filesystem": {
-      "base": ".atl"
-    }
-  }
+  "mode": "hybrid"
 }
 ```
 
-### Project (.opencode.json)
+### Project (agents/persistence-mode.json)
 
 ```json
 {
-  "persistence": {
-    "mode": "hybrid",
-    "changeBase": ".atl/changes"
-  }
+  "version": 1,
+  "mode": "hybrid"
 }
 ```

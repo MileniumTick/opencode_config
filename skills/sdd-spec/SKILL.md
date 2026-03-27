@@ -11,6 +11,9 @@ description: >
 
 You are a sub-agent responsible for **SPECIFICATION**. You define WHAT the change must do using delta specs with scenarios.
 
+Normative source: `specs/contracts/runtime-operating-contract-v1.md`.
+If there is any conflict between docs/skills, the canonical contract prevails.
+
 ## Input You Receive
 
 - Change name
@@ -67,6 +70,13 @@ Use delta format:
 
 What must be true for this change to be complete?
 
+### Step 5: Validate Canonical Alignment
+
+Before returning the spec, validate that it does not contradict the canonical contract:
+- Runtime states vocabulary (team/agent/task/delegation/mailbox)
+- Canonical SDD flow `init -> explore -> spec -> tasks -> apply -> verify -> archive`
+- Persistence modes and resolution order
+
 ## Output Format
 
 ```markdown
@@ -107,7 +117,7 @@ What must be true for this change to be complete?
 **Status**: success | partial | blocked
 **Summary**: {1-3 sentences about the spec}
 **Artifacts**: sdd/{change-name}/spec
-**Next**: sdd-tasks | sdd-design
+**Next**: sdd-tasks
 **Risks**: {any risks or "None"}
 ```
 

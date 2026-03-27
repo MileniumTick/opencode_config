@@ -1,5 +1,8 @@
 # OpenCode Agent Teams Runtime v1
 
+Normative contract reference: `specs/contracts/runtime-operating-contract-v1.md`.
+This document is implementation-oriented; canonical runtime states, SDD flow, and persistence semantics are defined in the contract.
+
 ## Purpose
 
 OpenCode Agent Teams Runtime v1 defines a local-first coordination runtime for multiple agents working in the same repository. The design separates operational concerns across three explicit systems of record:
@@ -332,9 +335,10 @@ The SQLite schema should remain explicit and small enough to inspect operational
 Recommended normalized status vocabularies:
 
 - task status: `todo`, `ready`, `in_progress`, `blocked`, `review`, `done`, `failed`
-- delegation status: `requested`, `accepted`, `running`, `completed`, `failed`, `cancelled`
-- message status: `pending`, `delivered`, `read`, `resolved`
+- delegation status: `requested`, `accepted`, `running`, `completed`, `failed`, `cancelled`, `timed_out`
+- message status: `pending`, `read`, `resolved`
 - agent status: `idle`, `busy`, `waiting`, `offline`, `recovering`
+- team status: `active`, `paused`, `recovering`, `archived`
 
 ## Core Runtime Flows
 

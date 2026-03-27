@@ -14,6 +14,9 @@ This specification covers:
 - recovery and reconciliation behavior
 - Git workflow policy enforcement
 
+Normative contract reference: `specs/contracts/runtime-operating-contract-v1.md`.
+If there is any conflict in state vocabulary, SDD flow, or persistence semantics, the canonical contract prevails.
+
 ## Functional Requirements
 
 ### 1. Coordination authority boundaries
@@ -43,7 +46,7 @@ This specification covers:
 ### 4. Mailbox
 
 - Directed messages between agents must be stored in SQLite.
-- Messages must support explicit status transitions such as delivered, read, and resolved.
+- Messages must support explicit status transitions `pending -> read -> resolved`.
 - Messages may reference related tasks or delegations.
 - Unresolved messages must be recoverable after restart.
 
