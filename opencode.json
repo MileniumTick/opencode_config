@@ -61,6 +61,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -80,6 +87,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -98,6 +112,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -116,6 +137,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -136,6 +164,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -154,6 +189,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -172,6 +214,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "docker ps": "allow",
           "docker ps -a": "allow",
@@ -197,6 +246,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "grep -r": "allow",
           "grep -n": "allow",
@@ -215,6 +271,13 @@
       "steps": 15,
       "permission": {
         "edit": "deny",
+        "task": {
+          "dev": "allow",
+          "qa": "allow",
+          "exploration": "allow",
+          "security": "allow",
+          "*": "deny"
+        },
         "bash": {
           "go test ./...": "allow",
           "go test -v ./...": "allow",
@@ -348,7 +411,7 @@
       },
       "models": {
         "qwen3:8b-16k": {
-          "tools": true
+          "": true
         }
       }
     }
