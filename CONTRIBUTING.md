@@ -2,7 +2,7 @@
 
 Welcome. This guide explains how to work in the OpenCode agent orchestration config repository.
 
-**Read order:** [`AGENTS.md`](./AGENTS.md) → this file → [`ORCHESTRATION.md`](./ORCHESTRATION.md) → [`DECISIONS.md`](./DECISIONS.md)
+**Read order:** [`AGENTS.md`](./AGENTS.md) → this file → [`DECISIONS.md`](./DECISIONS.md)
 
 ---
 
@@ -40,9 +40,8 @@ opencode/
 ├── opencode.json           # Main config: MCP servers, AI provider, agent permissions
 ├── package.json            # NPM dependencies (MCP server packages)
 │
-├── AGENTS.md               # START HERE — canonical reference
+├── AGENTS.md               # START HERE — canonical reference (includes full architecture)
 ├── CONTRIBUTING.md         # This file — onboarding guide
-├── ORCHESTRATION.md        # Architecture deep-dive: diagram, patterns, error handling
 └── DECISIONS.md            # Append-only change log and architecture decision record
 ```
 
@@ -55,7 +54,7 @@ opencode/
 | Add/change an MCP server connection | `opencode.json` `mcp` block |
 | Change the AI model or provider | `opencode.json` `provider` block |
 | Add a new slash command | `commands/<command-name>.md` |
-| Update architecture documentation | `ORCHESTRATION.md` or `AGENTS.md` |
+| Update architecture documentation | `AGENTS.md` (hierarchy, patterns, error handling all live there now) |
 | Record a significant decision | `DECISIONS.md` (add at the top) |
 
 ---
@@ -64,9 +63,8 @@ opencode/
 
 | Document | Purpose | When to read |
 |----------|---------|--------------|
-| `AGENTS.md` | Canonical overview: what the repo is, all agents, behavioral rules | First — always |
+| `AGENTS.md` | Canonical overview: what the repo is, all agents, behavioral rules, full hierarchy diagram, orchestration patterns | First — always |
 | `CONTRIBUTING.md` | File structure, how to add agents/skills, change permissions | Before making changes |
-| `ORCHESTRATION.md` | Architecture deep-dive: hierarchy diagram, patterns, error handling | When changing orchestration logic |
 | `DECISIONS.md` | Change log and architecture decision record | To understand why things are the way they are |
 
 ---
@@ -108,13 +106,11 @@ opencode/
    }
    ```
 
-3. **Update `AGENTS.md`** — add a row to the Agent Inventory table.
+3. **Update `AGENTS.md`** — add a row to the Agent Inventory table and the delegation hierarchy tree.
 
-4. **Update `ORCHESTRATION.md`** — add the agent to the hierarchy diagram and Files list.
+4. **Wire up routing** — if it's a domain lead, add a delegation rule to `agent/team-lead.md`.
 
-5. **Wire up routing** — if it's a domain lead, add a delegation rule to `agent/team-lead.md`.
-
-6. **Record the decision** in `DECISIONS.md`.
+4. **Record the decision** in `DECISIONS.md`.
 
 ### Agent frontmatter fields
 
@@ -218,7 +214,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 feat(agent): add @golang-lead with gRPC routing
 fix(config): correct mobile-lead bash permissions
-docs: update ORCHESTRATION.md hierarchy diagram
+docs: update AGENTS.md hierarchy diagram
 chore: add missing agents to opencode.json permissions block
 ```
 

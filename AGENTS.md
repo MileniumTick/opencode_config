@@ -14,7 +14,7 @@ This is an **AI agent orchestration configuration system** for [OpenCode](https:
 | **JSON config** | `opencode.json`, `package.json` | MCP server wiring, AI provider, agent tool permissions |
 | **Markdown agent prompts** | `agent/*.md` | System prompts that define each agent's identity, behavior, and constraints |
 | **Markdown slash commands** | `commands/*.md` | Custom `/commit`, `/review` TUI commands |
-| **Documentation** | `*.md` (root) | Human-readable architecture reference (this file, `ORCHESTRATION.md`, etc.) |
+| **Documentation** | `*.md` (root) | Human-readable reference: `AGENTS.md` (canonical), `CONTRIBUTING.md`, `DECISIONS.md` |
 | **Secrets** | `.secrets/` | API keys and tokens — gitignored, never committed |
 
 The agent `.md` files are loaded by OpenCode as system prompts via frontmatter (`description`, `mode`, `permission`).
@@ -106,8 +106,6 @@ opencode --version
 
 ## Agent System Architecture
 
-For the full diagram and orchestration patterns, see [`ORCHESTRATION.md`](./ORCHESTRATION.md).
-
 ### Agent Inventory (16 total)
 
 | Level | Agent | File | Role |
@@ -129,6 +127,42 @@ For the full diagram and orchestration patterns, see [`ORCHESTRATION.md`](./ORCH
 | 3 | `@product-owner` | `agent/product-owner.md` | Requirements and user stories worker |
 | 3 | `@ui-ux-partner` | `agent/ui-ux-partner.md` | UI/UX design and design systems worker |
 
+### Delegation Hierarchy
+
+```
+@team-lead (Level 1 — Orchestrator)
+    │
+    ├─> @backend-lead  (Node.js, Elysia, Bun, APIs)
+    │       └─> @dev, @exploration
+    │
+    ├─> @frontend-lead  (React, Vue, Svelte, TanStack)
+    │       └─> @dev, @ui-ux-partner
+    │
+    ├─> @data-lead  (PostgreSQL, Drizzle, SQL)
+    │       └─> @exploration
+    │
+    ├─> @security-lead  (OWASP, Auth, vulnerabilities)
+    │       └─> @security
+    │
+    ├─> @rust-lead  (Tokio, Tauri, WASM, systems)
+    │       └─> @dev, @exploration
+    │
+    ├─> @python-lead  (FastAPI, Django, data science)
+    │       └─> @dev
+    │
+    ├─> @devops-lead  (Docker, CI/CD, Cloud)
+    │       └─> @dev, @exploration
+    │
+    ├─> @mobile-lead  (React Native, Flutter, Expo)
+    │       └─> @dev, @qa, @devops-lead
+    │
+    └─> @golang-lead  (APIs, gRPC, microservices, CLI)
+            └─> @dev, @qa, @devops-lead
+```
+
+Cross-domain workers (any lead can delegate to these):
+`@dev` · `@qa` · `@security` · `@exploration` · `@ui-ux-partner` · `@product-owner`
+
 ### Communication Flow
 
 ```
@@ -137,6 +171,37 @@ User → @team-lead (Level 1)
          ├─ Domain task  → routes to domain lead (Level 2) → worker(s) (Level 3)
          └─ Complex task → Plan-and-Execute: creates Task Ledger, coordinates multiple leads
 ```
+
+### Orchestration Level Capabilities
+
+| Level | Pattern | Key Features |
+|-------|---------|-------------|
+| **1** | Basic orchestration | Reasoning before delegating · Retry with exponential backoff (2→4→8→16s) · Fallback chains · Task Ledger |
+| **2** | Advanced orchestration | Plan-and-Execute · Hierarchical routing (3 levels max) · Domain specialization · Full execution flows |
+| **3** | Production-ready | Three error type handling · Observability hooks · Clean Architecture principles · Full MCP ecosystem |
+
+### Error Handling
+
+- **Retry:** 3–5 attempts for external APIs; 2–3 for LLM calls
+- **Fallback chain:** Domain lead → Worker → Manual escalation to user
+- **Circuit breaker:** Stop calling a service after repeated failures; surface the error immediately
+
+### Skills
+
+| Skill | Location | Purpose |
+|-------|----------|---------|
+| `team-orchestrator` | `~/.agents/skills/team-orchestrator/` | Full 3-level orchestration patterns and routing tables |
+| `sdd-workflow` | `~/.agents/skills/sdd-workflow/` | Spec-Driven Development methodology |
+| Domain skills | `~/.agents/skills/*/` | Technology-specific patterns (drizzle-orm, elysiajs, vitest, etc.) |
+
+### Slash Commands
+
+Custom commands available in the OpenCode TUI:
+
+| Command | File | Purpose |
+|---------|------|---------|
+| `/commit` | `commands/commit.md` | Generate a conventional commit message from staged changes |
+| `/review` | `commands/review.md` | Trigger multi-agent code review (`@exploration` + `@security` + `@qa`) |
 
 ---
 

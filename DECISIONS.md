@@ -3,7 +3,15 @@
 This file records significant architectural decisions, configuration milestones, and resolved gaps.
 It is **append-only** — new entries go at the top. Do not edit past entries.
 
-For current system architecture, see [`AGENTS.md`](./AGENTS.md) and [`ORCHESTRATION.md`](./ORCHESTRATION.md).
+For current system architecture, see [`AGENTS.md`](./AGENTS.md).
+
+---
+
+## [2026-03-29] Merge ORCHESTRATION.md into AGENTS.md
+
+**Branch:** `feat/docs-canonical`
+
+**Decision:** Deleted `ORCHESTRATION.md` and merged its unique content (delegation hierarchy tree, per-level capability summary, error handling specifics, skills table, slash commands reference) into `AGENTS.md` under a new `## Agent System Architecture` section. Eliminates drift risk between two architecture docs and gives contributors a single authoritative reference. Updated all cross-references in `CONTRIBUTING.md` and `DECISIONS.md`. Deleted untracked `opencode.json.bak`.
 
 ---
 
