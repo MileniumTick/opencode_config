@@ -7,6 +7,21 @@ For current system architecture, see [`AGENTS.md`](./AGENTS.md).
 
 ---
 
+## [2026-03-29] Fase 2 — Operational Observability
+
+**Branch:** `feat/observability`
+
+**Decision:** Implemented local-first observability for the agent system with three components:
+- **Structured logging convention** (`OBSERVABILITY.md`): agents append JSON log lines to `~/.config/opencode/logs/agent-metrics.jsonl`, capturing latency, retries, status, and estimated token usage per task.
+- **`/metrics` slash command** (`commands/metrics.md`): TUI command that reads the log file and renders a per-agent summary report with success rates, latency stats, and recent failures.
+- **Operational runbooks** (`runbooks/`): three runbooks covering MCP server failures, CI pipeline failures, and `opencode.json` configuration errors.
+
+**Rationale:** No cloud observability stack needed — this is a config repo, not a running service. File-based JSONL logging is universally readable, portable, and zero-dependency. Runbooks close the gap identified in the 2026-03-28 retrospective.
+
+**Known gaps remaining:** Token counts are estimates only (OpenCode does not expose exact token counts for all providers). A future Fase 4 KPI dashboard could visualize this data.
+
+---
+
 ## [2026-03-29] Merge ORCHESTRATION.md into AGENTS.md
 
 **Branch:** `feat/docs-canonical`
