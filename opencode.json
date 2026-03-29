@@ -43,7 +43,9 @@
       "type": "local"
     }
   },
-  "plugin": [],
+  "plugin": [
+    "opencode-snip@latest"
+  ],
   "default_agent": "team-lead",
   "agent": {
     "team-lead": {
