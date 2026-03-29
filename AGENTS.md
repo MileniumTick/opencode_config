@@ -13,8 +13,10 @@ This is an **AI agent orchestration configuration system** for [OpenCode](https:
 |-----------|----------|---------|
 | **JSON config** | `opencode.json`, `package.json` | MCP server wiring, AI provider, agent tool permissions |
 | **Markdown agent prompts** | `agent/*.md` | System prompts that define each agent's identity, behavior, and constraints |
-| **Markdown slash commands** | `commands/*.md` | Custom `/commit`, `/review` TUI commands |
+| **Markdown slash commands** | `commands/*.md` | Custom `/commit`, `/review`, `/metrics` TUI commands |
 | **Documentation** | `*.md` (root) | Human-readable reference: `AGENTS.md` (canonical), `CONTRIBUTING.md`, `DECISIONS.md` |
+| **Observability** | `OBSERVABILITY.md`, `logs/` | Structured logging convention and per-agent metrics log |
+| **Runbooks** | `runbooks/` | Operational guides for MCP failures, CI failures, and config errors |
 | **Secrets** | `.secrets/` | API keys and tokens — gitignored, never committed |
 
 The agent `.md` files are loaded by OpenCode as system prompts via frontmatter (`description`, `mode`, `permission`).
@@ -202,6 +204,7 @@ Custom commands available in the OpenCode TUI:
 |---------|------|---------|
 | `/commit` | `commands/commit.md` | Generate a conventional commit message from staged changes |
 | `/review` | `commands/review.md` | Trigger multi-agent code review (`@exploration` + `@security` + `@qa`) |
+| `/metrics` | `commands/metrics.md` | Read the agent metrics log and render a per-agent summary report |
 
 ---
 
@@ -222,6 +225,25 @@ Custom commands available in the OpenCode TUI:
 - Endpoint: `http://localhost:11434/v1`
 
 > This configuration is machine-specific. API keys and endpoints will differ per environment.
+
+### Observability
+
+Agents emit structured JSON log entries to a local file after each completed task. The `/metrics`
+slash command reads this log and produces a per-agent summary report.
+
+- **Convention:** [`OBSERVABILITY.md`](./OBSERVABILITY.md) — log schema, bash one-liner, rotation policy, and privacy rules
+- **Log file:** `~/.config/opencode/logs/agent-metrics.jsonl` (append-only JSONL)
+- **Report command:** `/metrics` in the OpenCode TUI
+
+### Operational Runbooks
+
+Step-by-step guides for diagnosing and recovering from operational failures:
+
+| Runbook | File | Covers |
+|---------|------|--------|
+| MCP Server Failures | [`runbooks/mcp-failure.md`](./runbooks/mcp-failure.md) | `context7`, `engram`, `gitea`, `plane` — symptoms, diagnosis, fix, graceful degradation |
+| CI Pipeline Failures | [`runbooks/ci-failure.md`](./runbooks/ci-failure.md) | JSON lint, dependency audit, secret scan, smoke config, CI runner down |
+| Config Errors | [`runbooks/config-error.md`](./runbooks/config-error.md) | JSON syntax, missing secrets, model not available, agent permissions, MCP version mismatch |
 
 ---
 
