@@ -1,4 +1,25 @@
 {
+  // =============================================================================
+  // AGENT PERMISSION PHILOSOPHY
+  // =============================================================================
+  // Principle: DENY BY DEFAULT — explicit allow-lists only.
+  //
+  // Rules enforced here:
+  //  1. `edit` is DENIED for all agents unless the role explicitly requires
+  //     writing files (documented inline). No agent gets edit:allow globally.
+  //  2. `bash` uses an explicit allow-list per agent. The catch-all `"*": "ask"`
+  //     fallback is REMOVED from every agent — unknown commands are implicitly
+  //     denied, not prompted. Wildcards on paths (e.g. `cat *`) are replaced
+  //     with specific scoped patterns or removed.
+  //  3. `exploration` agent is read-only: only `ls`, `cat`, `grep`, and git
+  //     read commands are allowed. No find, no shell expansion beyond paths.
+  //  4. `security` agent may run audit/scan tools only — no write commands.
+  //  5. `dev` agent (if added) is the ONLY agent that may request `edit: allow`
+  //     and must justify each bash addition via PR review.
+  //  6. `devops-lead` docker commands are scoped to read-only inspection verbs.
+  //  7. Any agent needing new permissions must be reviewed by @security-lead
+  //     and documented with a justification comment.
+  // =============================================================================
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "context7": {
@@ -45,183 +66,313 @@
   },
   "plugin": [],
   "agent": {
+    // -------------------------------------------------------------------------
+    // LEVEL 1: ORCHESTRATOR
+    // -------------------------------------------------------------------------
+
+    // team-lead: orchestrates via MCP tools only — no bash, no file editing.
     "team-lead": {
       "permission": {
         "edit": "deny",
         "bash": "deny"
       }
     },
+
+    // -------------------------------------------------------------------------
+    // LEVEL 2: DOMAIN LEADS — read-only bash (git inspection + grep)
+    // No catch-all "*" fallback. Unknown commands are implicitly denied.
+    // -------------------------------------------------------------------------
+
+    // backend-lead: code review and delegation only.
+    "backend-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git log -p": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // frontend-lead: code review and delegation only.
+    "frontend-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // data-lead: schema and query review only.
+    "data-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // security-lead: coordinates security reviews — inspection commands only.
+    // Exception: git read commands needed to review diffs for vulnerabilities.
+    "security-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -rn": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git log -p": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // rust-lead: code review and build inspection.
+    "rust-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // python-lead: code review and delegation only.
+    "python-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // devops-lead: infrastructure inspection only.
+    // Exception: docker inspect/ps/logs are allowed (read-only Docker verbs).
+    // docker run/exec/rm/build are explicitly NOT in the allow-list.
+    "devops-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "docker ps": "allow",
+          "docker ps -a": "allow",
+          "docker inspect": "allow",
+          "docker logs": "allow",
+          "docker images": "allow",
+          "docker network ls": "allow",
+          "docker volume ls": "allow",
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // mobile-lead: code review and delegation only.
+    "mobile-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // golang-lead: Go code review and test result inspection.
+    // Exception: go test/vet are allowed for read-only quality checks.
+    // go build is removed (side effects: binary artifacts, cgo execution).
+    "golang-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "go test ./...": "allow",
+          "go test -v ./...": "allow",
+          "go vet ./...": "allow",
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git status": "allow",
+          "git show": "allow"
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // LEVEL 3: WORKERS
+    // -------------------------------------------------------------------------
+
+    // exploration: READ-ONLY code analysis. Tightest restrictions.
+    // Rationale: this agent reads arbitrary codebases — no write, no execution.
+    // Allowed: ls on explicit paths, cat on files, grep for content search,
+    // and git read commands. find is REMOVED (recursive traversal is too broad).
+    // cat and ls are scoped: no shell expansion, no piping to executors.
     "exploration": {
       "permission": {
         "edit": "deny",
         "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "find *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
+          "ls": "allow",
+          "ls -la": "allow",
+          "ls -lh": "allow",
+          "cat": "allow",
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -rn": "allow",
+          "grep -l": "allow",
+          "grep -rl": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git log -p": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
           "git status": "allow",
-          "cat *": "allow",
-          "ls *": "allow"
+          "git show": "allow",
+          "git branch": "allow",
+          "git remote -v": "allow"
         }
       }
     },
+
+    // security: runs security scanners and audit tools. No file writes.
+    // Exception: audit/scan CLIs are allowed as they are read-only analysis.
+    // semgrep and trivy are scoped to `fs` subcommand (filesystem scan only).
     "security": {
       "permission": {
         "edit": "deny",
         "bash": {
-          "*": "ask",
-          "npm audit*": "allow",
-          "bun audit*": "allow",
-          "pip-audit*": "allow",
-          "trivy fs*": "allow",
-          "semgrep*": "allow",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow"
+          "npm audit": "allow",
+          "npm audit --json": "allow",
+          "bun audit": "allow",
+          "pip-audit": "allow",
+          "pip-audit --json": "allow",
+          "trivy fs": "allow",
+          "trivy fs --format json": "allow",
+          "semgrep --config auto": "allow",
+          "semgrep --config p/owasp-top-ten": "allow",
+          "semgrep --config p/secrets": "allow",
+          "grep -r": "allow",
+          "grep -n": "allow",
+          "grep -rn": "allow",
+          "grep -l": "allow",
+          "git log": "allow",
+          "git log --oneline": "allow",
+          "git log -p": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git show": "allow"
         }
       }
     },
+
+    // qa: runs tests and linters. No file writes.
+    // Exception: test runners are allowed; npm/bun install is NOT allowed
+    // (package installation has side effects and could introduce supply chain risk).
     "qa": {
       "permission": {
         "edit": "deny",
         "bash": {
-          "*": "ask",
-          "npm test*": "allow",
-          "bun test*": "allow",
-          "vitest*": "allow",
-          "pytest*": "allow",
-          "cargo test*": "allow",
-          "playwright*": "allow",
-          "npm run lint*": "allow",
-          "bun run lint*": "allow",
-          "tsc*": "allow",
-          "npm audit*": "allow",
-          "git diff*": "allow",
+          "npm test": "allow",
+          "npm run test": "allow",
+          "npm run lint": "allow",
+          "npm audit": "allow",
+          "bun test": "allow",
+          "bun run test": "allow",
+          "bun run lint": "allow",
+          "vitest run": "allow",
+          "vitest run --reporter verbose": "allow",
+          "pytest": "allow",
+          "pytest -v": "allow",
+          "pytest --tb=short": "allow",
+          "cargo test": "allow",
+          "cargo test --verbose": "allow",
+          "playwright test": "allow",
+          "playwright test --reporter=list": "allow",
+          "tsc --noEmit": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
           "git status": "allow"
         }
       }
     },
+
+    // product-owner: requirements and planning only — no bash access.
     "product-owner": {
       "permission": {
         "edit": "deny",
         "bash": "deny"
       }
     },
+
+    // ui-ux-partner: design review only — no bash access.
     "ui-ux-partner": {
       "permission": {
         "edit": "deny",
         "bash": "deny"
-      }
-    },
-    "backend-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
-      }
-    },
-    "frontend-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
-      }
-    },
-    "data-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
-      }
-    },
-    "security-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
-      }
-    },
-    "rust-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow"
-        }
-      }
-    },
-    "python-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow"
-        }
-      }
-    },
-    "devops-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "docker *": "allow",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
-      }
-    },
-    "mobile-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
-      }
-    },
-    "golang-lead": {
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "grep *": "allow",
-          "go test*": "allow",
-          "go build*": "allow",
-          "go vet*": "allow",
-          "git log*": "allow",
-          "git diff*": "allow",
-          "git status": "allow"
-        }
       }
     }
   },
