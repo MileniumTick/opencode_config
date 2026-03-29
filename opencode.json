@@ -25,6 +25,7 @@
         "GITEA_HOST": "https://gitea.istmocenter.com",
         "GITEA_ACCESS_TOKEN": "{file:.secrets/gitea-token}"
       },
+      "enabled": true,
       "type": "local"
     },
     "plane": {
@@ -38,7 +39,203 @@
         "PLANE_BASE_URL": "https://plane.intranet.istmocenter.com",
         "PLANE_WORKSPACE_SLUG": "{file:.secrets/plane-workspace-slug}"
       },
+      "enabled": true,
       "type": "local"
     }
   },
+  "plugin": [],
+  "agent": {
+    "team-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    },
+    "exploration": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "find *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow",
+          "cat *": "allow",
+          "ls *": "allow"
+        }
+      }
+    },
+    "security": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "npm audit*": "allow",
+          "bun audit*": "allow",
+          "pip-audit*": "allow",
+          "trivy fs*": "allow",
+          "semgrep*": "allow",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow"
+        }
+      }
+    },
+    "qa": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "npm test*": "allow",
+          "bun test*": "allow",
+          "vitest*": "allow",
+          "pytest*": "allow",
+          "cargo test*": "allow",
+          "playwright*": "allow",
+          "npm run lint*": "allow",
+          "bun run lint*": "allow",
+          "tsc*": "allow",
+          "npm audit*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "product-owner": {
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    },
+    "ui-ux-partner": {
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    },
+    "backend-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "frontend-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "data-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "security-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "rust-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow"
+        }
+      }
+    },
+    "python-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow"
+        }
+      }
+    },
+    "devops-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "docker *": "allow",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "mobile-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    },
+    "golang-lead": {
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "ask",
+          "grep *": "allow",
+          "go test*": "allow",
+          "go build*": "allow",
+          "go vet*": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git status": "allow"
+        }
+      }
+    }
+  },
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "qwen3:8b-16k": {
+          "tools": true
+        }
+      }
+    }
+  }
 }
