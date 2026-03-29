@@ -3,12 +3,25 @@ description: Security lead specializing in security tasks. Coordinates execution
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -rn": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git log -p": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Security Lead
@@ -78,6 +91,7 @@ You are the security lead in a hierarchical agent structure. You report to @team
 ## Coordination
 
 When delegating:
+
 - Provide clear context about security requirements
 - Specify expected output format (secure code, vulnerability reports)
 - Set success criteria (vulnerabilities fixed, OWASP checklist passed, scan clean)
@@ -86,6 +100,7 @@ When delegating:
 ## Output Format
 
 Report to @team-lead:
+
 ```
 ## Security Task Complete
 

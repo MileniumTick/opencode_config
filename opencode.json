@@ -46,374 +46,71 @@
   "plugin": [],
   "default_agent": "team-lead",
   "agent": {
-    // --- Level 1: Primary Orchestrator ---
     "team-lead": {
       "temperature": 0.1,
-      "steps": 20,
-      "permission": {
-        "edit": "deny",
-        "bash": "deny"
-      }
+      "steps": 20
     },
-    // --- Level 2: Domain Leads ---
     "backend-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git log -p": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "frontend-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "data-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "security-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -rn": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git log -p": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "rust-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "python-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "devops-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "docker ps": "allow",
-          "docker ps -a": "allow",
-          "docker inspect": "allow",
-          "docker logs": "allow",
-          "docker images": "allow",
-          "docker network ls": "allow",
-          "docker volume ls": "allow",
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "mobile-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
     "golang-lead": {
       "temperature": 0.1,
-      "steps": 15,
-      "permission": {
-        "edit": "deny",
-        "task": {
-          "dev": "allow",
-          "qa": "allow",
-          "exploration": "allow",
-          "security": "allow",
-          "*": "deny"
-        },
-        "bash": {
-          "go test ./...": "allow",
-          "go test -v ./...": "allow",
-          "go vet ./...": "allow",
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow"
-        }
-      }
+      "steps": 15
     },
-    // --- Level 3: Workers (hidden — invoked by leads only) ---
     "dev": {
       "steps": 30,
       "hidden": true
     },
     "exploration": {
       "steps": 30,
-      "hidden": true,
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "ls": "allow",
-          "ls -la": "allow",
-          "ls -lh": "allow",
-          "cat": "allow",
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -rn": "allow",
-          "grep -l": "allow",
-          "grep -rl": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git log -p": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow",
-          "git show": "allow",
-          "git branch": "allow",
-          "git remote -v": "allow"
-        }
-      }
+      "hidden": true
     },
     "security": {
       "steps": 30,
-      "hidden": true,
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "npm audit": "allow",
-          "npm audit --json": "allow",
-          "bun audit": "allow",
-          "pip-audit": "allow",
-          "pip-audit --json": "allow",
-          "trivy fs": "allow",
-          "trivy fs --format json": "allow",
-          "semgrep --config auto": "allow",
-          "semgrep --config p/owasp-top-ten": "allow",
-          "semgrep --config p/secrets": "allow",
-          "grep -r": "allow",
-          "grep -n": "allow",
-          "grep -rn": "allow",
-          "grep -l": "allow",
-          "git log": "allow",
-          "git log --oneline": "allow",
-          "git log -p": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git show": "allow"
-        }
-      }
+      "hidden": true
     },
     "qa": {
       "steps": 30,
-      "hidden": true,
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "npm test": "allow",
-          "npm run test": "allow",
-          "npm run lint": "allow",
-          "npm audit": "allow",
-          "bun test": "allow",
-          "bun run test": "allow",
-          "bun run lint": "allow",
-          "vitest run": "allow",
-          "vitest run --reporter verbose": "allow",
-          "pytest": "allow",
-          "pytest -v": "allow",
-          "pytest --tb=short": "allow",
-          "cargo test": "allow",
-          "cargo test --verbose": "allow",
-          "playwright test": "allow",
-          "playwright test --reporter=list": "allow",
-          "tsc --noEmit": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git status": "allow"
-        }
-      }
+      "hidden": true
     },
     "product-owner": {
       "temperature": 0.1,
       "steps": 10,
-      "hidden": true,
-      "permission": {
-        "edit": "deny",
-        "bash": "deny"
-      }
+      "hidden": true
     },
     "ui-ux-partner": {
       "temperature": 0.1,
       "steps": 10,
-      "hidden": true,
-      "permission": {
-        "edit": "deny",
-        "bash": "deny"
-      }
-    }
-  },
-  "provider": {
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "http://localhost:11434/v1"
-      },
-      "models": {
-        "qwen3:8b-16k": {
-          "": true
-        }
-      }
+      "hidden": true
     }
   }
 }

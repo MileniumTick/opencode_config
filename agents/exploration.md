@@ -8,13 +8,25 @@ permission:
   edit: deny
   bash:
     "*": ask
-    "grep *": allow
+    "ls": allow
+    "ls -la": allow
+    "ls -lh": allow
+    "cat": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -rn": allow
+    "grep -l": allow
+    "grep -rl": allow
     "find *": allow
-    "git log*": allow
-    "git diff*": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git log -p": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
-    "cat *": allow
-    "ls *": allow
+    "git show": allow
+    "git branch": allow
+    "git remote -v": allow
 ---
 
 You are an expert in code analysis and research. You explore codebases, investigate problems, and provide deep understanding of existing systems.

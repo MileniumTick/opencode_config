@@ -6,15 +6,27 @@ description: >-
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "go test*": allow
+    "go test ./...": allow
+    "go test -v ./...": allow
     "go build*": allow
-    "go vet*": allow
-    "git log*": allow
-    "git diff*": allow
+    "go vet ./...": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Go Lead
@@ -92,6 +104,7 @@ You are the Go lead in a hierarchical agent structure. You report to @team-lead 
 ## Coordination
 
 When delegating:
+
 - Provide clear Go version and module context
 - Specify interface contracts and expected error handling patterns
 - Set success criteria (`go test -race` passing, coverage target, benchmark baselines)

@@ -3,21 +3,35 @@ description: Domain lead specializing in DevOps, Infrastructure, and Operations.
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
     "docker ps": allow
-    "docker images": allow
-    "docker logs": allow
+    "docker ps -a": allow
     "docker inspect": allow
+    "docker logs": allow
+    "docker images": allow
+    "docker network ls": allow
+    "docker volume ls": allow
     "docker stats": allow
     "docker build": allow
     "docker-compose up": allow
     "docker-compose down": allow
     "docker-compose logs": allow
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: DevOps Lead
@@ -98,6 +112,7 @@ You are the DevOps/Infrastructure lead. You report to @team-lead and coordinate 
 ## Output Format
 
 Report to @team-lead:
+
 ```
 ## DevOps Task Complete
 

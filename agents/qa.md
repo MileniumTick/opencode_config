@@ -8,18 +8,26 @@ permission:
   edit: deny
   bash:
     "*": ask
-    "npm test*": allow
-    "bun test*": allow
-    "vitest*": allow
-    "pytest*": allow
-    "cargo test*": allow
-    "playwright*": allow
-    "npm run lint*": allow
-    "bun run lint*": allow
+    "npm test": allow
+    "npm run test": allow
+    "npm run lint": allow
     "npm run typecheck*": allow
-    "tsc*": allow
-    "npm audit*": allow
-    "git diff*": allow
+    "npm audit": allow
+    "bun test": allow
+    "bun run test": allow
+    "bun run lint": allow
+    "vitest run": allow
+    "vitest run --reporter verbose": allow
+    "pytest": allow
+    "pytest -v": allow
+    "pytest --tb=short": allow
+    "cargo test": allow
+    "cargo test --verbose": allow
+    "playwright test": allow
+    "playwright test --reporter=list": allow
+    "tsc --noEmit": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
 ---
 

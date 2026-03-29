@@ -3,12 +3,23 @@ description: Data lead specializing in database and data tasks. Coordinates exec
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Data Lead
@@ -77,6 +88,7 @@ You are the data lead in a hierarchical agent structure. You report to @team-lea
 ## Coordination
 
 When delegating:
+
 - Provide clear context about the data model
 - Specify expected output format (migration files, queries)
 - Set success criteria (migrations passing, queries optimized, no N+1)
@@ -86,6 +98,7 @@ When delegating:
 ## Output Format
 
 Report to @team-lead:
+
 ```
 ## Data Task Complete
 

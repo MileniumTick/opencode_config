@@ -6,12 +6,23 @@ description: >-
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Mobile Lead
@@ -87,6 +98,7 @@ You are the mobile lead in a hierarchical agent structure. You report to @team-l
 ## Coordination
 
 When delegating:
+
 - Provide clear platform context (React Native / Flutter / both)
 - Specify iOS and Android behavioral differences where relevant
 - Set success criteria (emulator tests, bundle size budget, offline validation)

@@ -250,8 +250,8 @@ Step-by-step guides for diagnosing and recovering from operational failures:
 ## Tool Permissions Model
 
 Agent tool permissions are declared in two places:
-1. **Agent frontmatter** (`agent/*.md`) — primary source, loaded at runtime
-2. **`opencode.json` `agent` block** — overrides or supplements frontmatter permissions
+1. **`opencode.json` `agent` block** — global base permissions and delegations
+2. **Agent frontmatter** (`agent/*.md`) — specific overrides that take precedence over the JSON config
 
 General policy:
 - `@team-lead`, `@product-owner`, `@ui-ux-partner` — no `edit` or `bash` (orchestration/design only)

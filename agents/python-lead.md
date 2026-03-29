@@ -3,12 +3,23 @@ description: Domain lead specializing in Python. Coordinates execution and deleg
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Python Lead
@@ -74,6 +85,7 @@ You are the Python lead in a hierarchical agent structure. You report to @team-l
 ## Coordination
 
 When delegating:
+
 - Provide clear context about the Python framework and version constraints
 - Specify expected output format (typed functions, async/sync consistency)
 - Set success criteria (type-checked with mypy/pyright, tests passing, no new unvetted dependencies)
@@ -82,6 +94,7 @@ When delegating:
 ## Output Format
 
 Report to @team-lead:
+
 ```
 ## Python Task Complete
 

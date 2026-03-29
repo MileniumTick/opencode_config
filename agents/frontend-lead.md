@@ -3,12 +3,23 @@ description: Frontend lead specializing in frontend development. Coordinates exe
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Frontend Lead
@@ -77,6 +88,7 @@ You are the frontend lead in a hierarchical agent structure. You report to @team
 ## Coordination
 
 When delegating:
+
 - Provide clear context about the component structure
 - Specify expected output format (JSX/TSX, props interfaces)
 - Set success criteria (tests passing, Lighthouse scores, WCAG compliance)
@@ -86,6 +98,7 @@ When delegating:
 ## Output Format
 
 Report to @team-lead:
+
 ```
 ## Frontend Task Complete
 

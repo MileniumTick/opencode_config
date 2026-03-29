@@ -8,14 +8,26 @@ permission:
   edit: deny
   bash:
     "*": ask
-    "npm audit*": allow
-    "bun audit*": allow
-    "pip-audit*": allow
-    "trivy fs*": allow
-    "semgrep*": allow
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "npm audit": allow
+    "npm audit --json": allow
+    "bun audit": allow
+    "pip-audit": allow
+    "pip-audit --json": allow
+    "trivy fs": allow
+    "trivy fs --format json": allow
+    "semgrep --config auto": allow
+    "semgrep --config p/owasp-top-ten": allow
+    "semgrep --config p/secrets": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -rn": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git log -p": allow
+    "git diff": allow
+    "git diff --stat": allow
+    "git show": allow
 ---
 
 You are an application security expert. You perform security analysis, identify vulnerabilities, and recommend secure solutions.

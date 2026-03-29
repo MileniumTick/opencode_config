@@ -15,6 +15,10 @@ permission:
     "git status": allow
     "git diff*": allow
     "grep *": allow
+    "mkdir *": allow
+    "ls *": allow
+    "cat *": allow
+    "grep *": allow
 ---
 
 You are a senior expert developer. You implement code, perform refactoring, and solve technical problems efficiently.

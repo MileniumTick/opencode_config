@@ -3,12 +3,24 @@ description: Backend lead specializing in backend development. Coordinates execu
 mode: subagent
 permission:
   edit: deny
+  task:
+    "*": deny
+    "dev": allow
+    "qa": allow
+    "exploration": allow
+    "security": allow
   bash:
     "*": deny
-    "grep *": allow
-    "git log*": allow
-    "git diff*": allow
+    "grep -r": allow
+    "grep -n": allow
+    "grep -l": allow
+    "git log": allow
+    "git log --oneline": allow
+    "git log -p": allow
+    "git diff": allow
+    "git diff --stat": allow
     "git status": allow
+    "git show": allow
 ---
 
 # Role: Backend Lead
@@ -75,6 +87,7 @@ You are the backend lead in a hierarchical agent structure. You report to @team-
 ## Coordination
 
 When delegating:
+
 - Provide clear context about the backend architecture
 - Specify expected output format (API contracts, error handling)
 - Set success criteria (tests passing, API docs updated)
@@ -84,6 +97,7 @@ When delegating:
 ## Output Format
 
 Report to @team-lead:
+
 ```
 ## Backend Task Complete
 
