@@ -7,7 +7,7 @@ mode: subagent
 permission:
   edit: deny
   bash:
-    "*": ask
+    "*": deny
     "grep *": allow
     "go test*": allow
     "go build*": allow

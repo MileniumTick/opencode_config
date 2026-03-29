@@ -7,7 +7,7 @@ mode: subagent
 permission:
   edit: deny
   bash:
-    "*": ask
+    "*": deny
     "grep *": allow
     "git log*": allow
     "git diff*": allow

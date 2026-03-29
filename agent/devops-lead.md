@@ -4,7 +4,7 @@ mode: subagent
 permission:
   edit: deny
   bash:
-    "*": ask
+    "*": deny
     "docker ps": allow
     "docker images": allow
     "docker logs": allow
