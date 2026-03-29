@@ -44,6 +44,7 @@
     }
   },
   "plugin": [],
+  "default_agent": "team-lead",
   "agent": {
     "team-lead": {
       "permission": {
