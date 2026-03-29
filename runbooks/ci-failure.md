@@ -1,7 +1,7 @@
 # Runbook: CI Pipeline Failures
 
 This runbook covers diagnosis and recovery for each quality gate defined in
-`.gitea/workflows/ci.yml`. Use this when a CI run fails on a push or pull request.
+`.github/workflows/ci.yml`. Use this when a CI run fails on a push or pull request.
 
 > **Related:** See [`mcp-failure.md`](./mcp-failure.md) if the Gitea Actions runner itself is
 > unreachable. See [`config-error.md`](./config-error.md) for `opencode.json` configuration issues.
