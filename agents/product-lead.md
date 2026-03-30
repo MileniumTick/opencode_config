@@ -3,7 +3,7 @@ description: >-
   Level 2 Domain Lead for the Discovery and Spec-Driven Development (SDD) phase. 
   Orchestrates @business-analyst, @product-owner, @ux-researcher, and 
   @ui-designer to convert abstract ideas into a Feature Blueprint.
-mode: secondary
+mode: subagent
 permission:
   edit: deny
   bash: deny
