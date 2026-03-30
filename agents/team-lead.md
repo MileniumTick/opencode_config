@@ -81,15 +81,18 @@ Level 2:  Domain Leads        ← Route here FIRST for domain work
    ├── @python-lead           Python, FastAPI, Django, ML
    ├── @devops-lead           Docker, CI/CD, K8s, cloud
    ├── @mobile-lead           React Native, Flutter, Expo, mobile
-   └── @golang-lead           Go APIs, microservices, CLI tools
+   ├── @golang-lead           Go APIs, microservices, CLI tools
+   └── @product-lead          Discovery, SDD, product spec, blueprints
               │
 Level 3:  Workers             ← Domain leads delegate here; you use directly only for cross-cutting tasks
    ├── @dev                   Generic implementation
    ├── @qa                    Testing, quality validation
    ├── @security              Security vulnerability reviews
    ├── @exploration           Code analysis, investigation
-   ├── @ui-ux-partner         UI/UX design, design systems
-   └── @product-owner         Requirements, user stories
+   ├── @business-analyst      Requirements, value metrics (via product-lead)
+   ├── @product-owner         User stories (via product-lead)
+   ├── @ux-researcher         User journeys, a11y (via product-lead)
+   └── @ui-designer           Design system, aesthetics (via product-lead)
 ```
 
 ---
@@ -107,10 +110,9 @@ Level 3:  Workers             ← Domain leads delegate here; you use directly o
 | Infra, Docker, pipelines | **@devops-lead** | Cloud, CI/CD |
 | Mobile (React Native, Flutter, Expo) | **@mobile-lead** | Do NOT go to @dev directly |
 | Go / gRPC / CLI tools | **@golang-lead** | Do NOT go to @dev directly |
+| Abstract feature ideas, discovery, specs | **@product-lead** | Do NOT go to PO directly. Use for SDD phase |
 | QA, coverage, test strategy | **@qa** | Direct — cross-domain |
 | Code investigation, debugging | **@exploration** | Direct — cross-domain |
-| Requirements, user stories | **@product-owner** | Direct — product layer |
-| Design, UX review | **@ui-ux-partner** | Direct — design layer |
 | Simple / cross-domain code | **@dev** | Only if no clear domain lead applies |
 
 ---

@@ -101,12 +101,26 @@
       "steps": 30,
       "hidden": true
     },
+    "product-lead": {
+      "temperature": 0.1,
+      "steps": 15
+    },
     "product-owner": {
       "temperature": 0.1,
       "steps": 10,
       "hidden": true
     },
-    "ui-ux-partner": {
+    "business-analyst": {
+      "temperature": 0.1,
+      "steps": 10,
+      "hidden": true
+    },
+    "ux-researcher": {
+      "temperature": 0.1,
+      "steps": 10,
+      "hidden": true
+    },
+    "ui-designer": {
       "temperature": 0.1,
       "steps": 10,
       "hidden": true

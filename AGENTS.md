@@ -123,11 +123,14 @@ opencode --version
 | 2 | `@mobile-lead` | `agent/mobile-lead.md` | Mobile domain: React Native, Flutter, Expo |
 | 2 | `@golang-lead` | `agent/golang-lead.md` | Go domain: APIs, gRPC, microservices, CLI |
 | 2/3 | `@qa` | `agent/qa.md` | Quality assurance — can act as lead or worker |
+| 2 | `@product-lead` | `agent/product-lead.md` | Discovery and SDD phase orchestrator |
 | 3 | `@dev` | `agent/dev.md` | Generic implementation worker |
 | 3 | `@security` | `agent/security.md` | Security vulnerability analysis worker |
 | 3 | `@exploration` | `agent/exploration.md` | Code analysis and investigation worker |
+| 3 | `@business-analyst` | `agent/business-analyst.md` | Value metrics and KPIs worker |
 | 3 | `@product-owner` | `agent/product-owner.md` | Requirements and user stories worker |
-| 3 | `@ui-ux-partner` | `agent/ui-ux-partner.md` | UI/UX design and design systems worker |
+| 3 | `@ux-researcher` | `agent/ux-researcher.md` | User journey and edge case worker |
+| 3 | `@ui-designer` | `agent/ui-designer.md` | Design systems and aesthetics worker |
 
 ### Delegation Hierarchy
 
@@ -158,12 +161,15 @@ opencode --version
     ├─> @mobile-lead  (React Native, Flutter, Expo)
     │       └─> @dev, @qa, @devops-lead
     │
-    └─> @golang-lead  (APIs, gRPC, microservices, CLI)
-            └─> @dev, @qa, @devops-lead
+    ├─> @golang-lead  (APIs, gRPC, microservices, CLI)
+    │       └─> @dev, @qa, @devops-lead
+    │
+    └─> @product-lead (Discovery, Specifications, SDD)
+            └─> @business-analyst, @product-owner, @ux-researcher, @ui-designer
 ```
 
 Cross-domain workers (any lead can delegate to these):
-`@dev` · `@qa` · `@security` · `@exploration` · `@ui-ux-partner` · `@product-owner`
+`@dev` · `@qa` · `@security` · `@exploration` · `@business-analyst` · `@product-owner` · `@ux-researcher` · `@ui-designer`
 
 ### Communication Flow
 
@@ -254,7 +260,7 @@ Agent tool permissions are declared in two places:
 2. **Agent frontmatter** (`agent/*.md`) — specific overrides that take precedence over the JSON config
 
 General policy:
-- `@team-lead`, `@product-owner`, `@ui-ux-partner` — no `edit` or `bash` (orchestration/design only)
+- `@team-lead`, `@product-lead`, `@business-analyst`, `@product-owner`, `@ux-researcher`, `@ui-designer` — no `edit` or `bash` (orchestration/design only)
 - Domain leads — `edit: deny`, limited read-only `bash` (grep, git log/diff/status)
 - Workers (`@dev`) — full `edit` and `bash` access (they implement)
 - `@security`, `@qa` — `edit: deny`, targeted `bash` for their tools (audit, test, lint)
