@@ -12,11 +12,12 @@ This is an **AI agent orchestration configuration system** for [OpenCode](https:
 | File Type | Location | Purpose |
 |-----------|----------|---------|
 | **JSON config** | `opencode.json`, `package.json` | MCP server wiring, AI provider, agent tool permissions |
-| **Markdown agent prompts** | `agent/*.md` | System prompts that define each agent's identity, behavior, and constraints |
+| **Markdown agent prompts** | `agents/*.md` | System prompts that define each agent's identity, behavior, and constraints |
 | **Markdown slash commands** | `commands/*.md` | Custom `/commit`, `/review`, `/metrics` TUI commands |
 | **Documentation** | `*.md` (root) | Human-readable reference: `AGENTS.md` (canonical), `CONTRIBUTING.md`, `DECISIONS.md` |
 | **Observability** | `OBSERVABILITY.md`, `logs/` | Structured logging convention and per-agent metrics log |
 | **Runbooks** | `runbooks/` | Operational guides for MCP failures, CI failures, and config errors |
+| **Project docs** | `docs/ai-work/` (per-project) | AI work sessions, decisions, project context |
 | **Secrets** | `.secrets/` | API keys and tokens — gitignored, never committed |
 
 The agent `.md` files are loaded by OpenCode as system prompts via frontmatter (`description`, `mode`, `permission`).
@@ -70,6 +71,15 @@ opencode --version
 
 > **There is no build step.** Agent prompts are plain Markdown — no compilation or transpilation needed.
 
+### Validation Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/check-quality-gates.py` | Detects duplicate headings, stale agent refs, team-lead bash policy, and required docs/rules |
+| `scripts/verify-config.sh` | Unified config verification runner (JSON + quality gates + key files) |
+
+Run `./scripts/verify-config.sh` before major changes.
+
 ---
 
 ## Style Guidelines
@@ -108,29 +118,36 @@ opencode --version
 
 ## Agent System Architecture
 
-### Agent Inventory (16 total)
+### Agent Inventory (23 total)
 
 | Level | Agent | File | Role |
 |-------|-------|------|------|
-| 1 | `@team-lead` | `agent/team-lead.md` | Primary orchestrator. Plans, delegates, consolidates. Never executes directly. |
-| 2 | `@backend-lead` | `agent/backend-lead.md` | Backend domain: Node.js, Elysia, Bun, APIs |
-| 2 | `@frontend-lead` | `agent/frontend-lead.md` | Frontend domain: React, Vue, Svelte, TanStack |
-| 2 | `@data-lead` | `agent/data-lead.md` | Data domain: PostgreSQL, Drizzle, SQL |
-| 2 | `@security-lead` | `agent/security-lead.md` | Security domain: OWASP, Auth, vulnerabilities |
-| 2 | `@rust-lead` | `agent/rust-lead.md` | Rust domain: Tokio, Tauri, WASM, systems |
-| 2 | `@python-lead` | `agent/python-lead.md` | Python domain: FastAPI, Django, data science |
-| 2 | `@devops-lead` | `agent/devops-lead.md` | DevOps domain: Docker, CI/CD, Cloud |
-| 2 | `@mobile-lead` | `agent/mobile-lead.md` | Mobile domain: React Native, Flutter, Expo |
-| 2 | `@golang-lead` | `agent/golang-lead.md` | Go domain: APIs, gRPC, microservices, CLI |
-| 2/3 | `@qa` | `agent/qa.md` | Quality assurance — can act as lead or worker |
-| 2 | `@product-lead` | `agent/product-lead.md` | Discovery and SDD phase orchestrator |
-| 3 | `@dev` | `agent/dev.md` | Generic implementation worker |
-| 3 | `@security` | `agent/security.md` | Security vulnerability analysis worker |
-| 3 | `@exploration` | `agent/exploration.md` | Code analysis and investigation worker |
-| 3 | `@business-analyst` | `agent/business-analyst.md` | Value metrics and KPIs worker |
-| 3 | `@product-owner` | `agent/product-owner.md` | Requirements and user stories worker |
-| 3 | `@ux-researcher` | `agent/ux-researcher.md` | User journey and edge case worker |
-| 3 | `@ui-designer` | `agent/ui-designer.md` | Design systems and aesthetics worker |
+| 1 | `@team-lead` | `agents/team-lead.md` | Primary orchestrator. Plans, delegates, consolidates. Never executes directly. |
+| 2 | `@backend-lead` | `agents/backend-lead.md` | Backend domain: Node.js, Elysia, Bun, APIs |
+| 2 | `@frontend-lead` | `agents/frontend-lead.md` | Frontend domain: React, Vue, Svelte, TanStack |
+| 2 | `@data-lead` | `agents/data-lead.md` | Data domain: PostgreSQL, Drizzle, SQL |
+| 2 | `@security-lead` | `agents/security-lead.md` | Security domain: OWASP, Auth, vulnerabilities |
+| 2 | `@rust-lead` | `agents/rust-lead.md` | Rust domain: Tokio, Tauri, WASM, systems |
+| 2 | `@python-lead` | `agents/python-lead.md` | Python domain: FastAPI, Django, data science |
+| 2 | `@devops-lead` | `agents/devops-lead.md` | DevOps domain: Docker, CI/CD, Cloud |
+| 2 | `@mobile-lead` | `agents/mobile-lead.md` | Mobile domain: React Native, Flutter, Expo |
+| 2 | `@golang-lead` | `agents/golang-lead.md` | Go domain: APIs, gRPC, microservices, CLI |
+| 2 | `@finance-lead` | `agents/finance-lead.md` | Finance domain: stocks, trading, portfolio, market analysis |
+| 2 | `@data-science-lead` | `agents/data-science-lead.md` | Data science domain: analytics, BI, statistical modeling |
+| 2 | `@content-lead` | `agents/content-lead.md` | Content domain: documentation, copywriting, communications |
+| 2 | `@research-lead` | `agents/research-lead.md` | Research domain: market research, competitive analysis, due diligence |
+| 2/3 | `@qa` | `agents/qa.md` | Quality assurance — can act as lead or worker |
+| 2 | `@product-lead` | `agents/product-lead.md` | Discovery and SDD phase orchestrator |
+| 3 | `@dev` | `agents/dev.md` | Generic implementation worker |
+| 3 | `@security` | `agents/security.md` | Security vulnerability analysis worker |
+| 3 | `@exploration` | `agents/exploration.md` | Code analysis and investigation worker |
+| 3 | `@business-analyst` | `agents/business-analyst.md` | Value metrics and KPIs worker |
+| 3 | `@product-owner` | `agents/product-owner.md` | Requirements and user stories worker |
+| 3 | `@ux-researcher` | `agents/ux-researcher.md` | User journey and edge case worker |
+| 3 | `@ui-designer` | `agents/ui-designer.md` | Design systems and aesthetics worker |
+| 3 | `@market-analyst` | `agents/market-analyst.md` | Market research, stock screening, technical analysis |
+| 3 | `@data-analyst` | `agents/data-analyst.md` | Data processing, statistical analysis, visualization |
+| 3 | `@tech-writer` | `agents/tech-writer.md` | Technical writing, documentation, content creation |
 
 ### Delegation Hierarchy
 
@@ -164,6 +181,18 @@ opencode --version
     ├─> @golang-lead  (APIs, gRPC, microservices, CLI)
     │       └─> @dev, @qa, @devops-lead
     │
+    ├─> @finance-lead  (Stocks, Trading, Portfolio, Market Analysis)
+    │       └─> @market-analyst, @dev, @exploration
+    │
+    ├─> @data-science-lead  (Data Science, Analytics, BI, Statistics)
+    │       └─> @data-analyst, @dev, @exploration
+    │
+    ├─> @content-lead  (Content, Documentation, Copywriting, Communications)
+    │       └─> @tech-writer, @dev, @exploration
+    │
+    ├─> @research-lead  (Market Research, Competitive Analysis, Due Diligence)
+    │       └─> @exploration, @dev, @market-analyst
+    │
     └─> @product-lead (Discovery, Specifications, SDD)
             └─> @business-analyst, @product-owner, @ux-researcher, @ui-designer
 ```
@@ -179,6 +208,18 @@ User → @team-lead (Level 1)
          ├─ Domain task  → routes to domain lead (Level 2) → worker(s) (Level 3)
          └─ Complex task → Plan-and-Execute: creates Task Ledger, coordinates multiple leads
 ```
+
+### Orchestration Level Capabilities
+
+### Routing Table
+
+| Request Type | Route To | Notes |
+|--------------|----------|-------|
+| Data analysis, BI, statistics | **@data-science-lead** | Descriptive, diagnostic, predictive analysis |
+| Data processing, visualization | **@data-analyst** | Direct — via @data-science-lead |
+| Content, documentation, copy | **@content-lead** | Technical docs, marketing, communications |
+| Writing, documentation creation | **@tech-writer** | Direct — via @content-lead |
+| Market research, competitive analysis | **@research-lead** | Due diligence, trend analysis, customer research |
 
 ### Orchestration Level Capabilities
 
@@ -211,6 +252,7 @@ Custom commands available in the OpenCode TUI:
 | `/commit` | `commands/commit.md` | Generate a conventional commit message from staged changes |
 | `/review` | `commands/review.md` | Trigger multi-agent code review (`@exploration` + `@security` + `@qa`) |
 | `/metrics` | `commands/metrics.md` | Read the agent metrics log and render a per-agent summary report |
+| `/health` | `commands/health.md` | Run full configuration health checks (JSON, agents, tools, plugins, docs) |
 
 ---
 
@@ -251,13 +293,53 @@ Step-by-step guides for diagnosing and recovering from operational failures:
 | CI Pipeline Failures | [`runbooks/ci-failure.md`](./runbooks/ci-failure.md) | JSON lint, dependency audit, secret scan, smoke config, CI runner down |
 | Config Errors | [`runbooks/config-error.md`](./runbooks/config-error.md) | JSON syntax, missing secrets, model not available, agent permissions, MCP version mismatch |
 
+### Project Documentation Convention
+
+When agents work on a project, they automatically create and maintain a `docs/ai-work/` directory inside that project. This is separate from this global config — it lives in each project being worked on.
+
+| File | Purpose | Updated by |
+|------|---------|------------|
+| `docs/ai-work/SESSIONS.md` | Chronological log of AI work sessions | `log_session` tool (auto) |
+| `docs/ai-work/DECISIONS.md` | Architecture and design decisions with rationale | `log_decision` tool (auto) |
+| `docs/ai-work/CONTEXT.md` | High-level project overview and current state | `generate_context` tool (auto) |
+
+#### For Medium/Large Changes (SDD-lite)
+
+| File | Purpose | Updated by |
+|------|---------|------------|
+| `docs/ai-work/changes/<slug>/spec.md` | Scope and acceptance criteria | `init_change` tool |
+| `docs/ai-work/changes/<slug>/tasks.md` | Execution checklist | `init_change` tool |
+| `docs/ai-work/changes/<slug>/verify.md` | Validation evidence | `init_change` tool |
+| `docs/ai-work/changes/<slug>/notes.md` | Chronological change notes | `log_session` / `log_decision` |
+
+**Rules:**
+- Small task (single session): only `SESSIONS.md` + `DECISIONS.md`
+- Medium/Large task: initialize `changes/<slug>/` and use `change_slug` in logs
+
+This ensures that any human or agent opening a project can see:
+- What the AI has done in this project
+- Why architectural decisions were made
+- The current state and tech stack of the project
+
+The `project-docs` Custom Tool (`tools/project-docs.ts`) manages these files automatically.
+
+### Custom Tools
+
+| Tool | File | Purpose |
+|------|------|---------|
+| `project-docs` | `tools/project-docs.ts` | Auto-generate project documentation (sessions, decisions, context, per-change SDD-lite folders) |
+| `market-data` | `tools/market-data.ts` | Fetch US stock market data via Yahoo Finance |
+| `send-alert` | `tools/send-alert.ts` | Send webhook notifications (Slack, Discord) |
+| `generate-report` | `tools/generate-report.ts` | Generate structured Markdown reports |
+| `rtk` (plugin) | `plugins/rtk.ts` | Rewrite bash commands for token savings |
+
 ---
 
 ## Tool Permissions Model
 
 Agent tool permissions are declared in two places:
 1. **`opencode.json` `agent` block** — global base permissions and delegations
-2. **Agent frontmatter** (`agent/*.md`) — specific overrides that take precedence over the JSON config
+2. **Agent frontmatter** (`agents/*.md`) — specific overrides that take precedence over the JSON config
 
 General policy:
 - `@team-lead`, `@product-lead`, `@business-analyst`, `@product-owner`, `@ux-researcher`, `@ui-designer` — no `edit` or `bash` (orchestration/design only)

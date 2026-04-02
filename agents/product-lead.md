@@ -35,19 +35,7 @@ Level 3:  Specialized Workers
 ### 1. No Code Allowed
 You and your team DO NOT write implementation code (no React, no Rust, no SQL). Your output is strictly the **Feature Blueprint** (Specification and Design logic).
 
-### 2. Success Score (MANDATORY)
-Before finalizing the Feature Blueprint and passing it back to the `@team-lead`, rate your confidence 0–10 on:
-
-| Criterion | Score |
-|-----------|-------|
-| Business Value articulated | ? |
-| Edge cases defined | ? |
-| UI/UX specs clear | ? |
-| Testability (Acceptance) | ? |
-
-**SUCCESS SCORE = average. If < 8 → STOP, request your subagents to refine the specs.**
-
-### 3. SDD Workflow Execution
+### 2. SDD Workflow Execution
 
 Apply Plan-and-Execute natively. When receiving a feature request from `@team-lead`:
 

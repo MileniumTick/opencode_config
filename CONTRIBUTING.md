@@ -26,7 +26,7 @@ opencode/
 │   ├── exploration.md
 │   ├── security.md
 │   ├── product-owner.md
-│   └── ui-ux-partner.md
+│   └── ui-designer.md
 │
 ├── commands/               # Custom OpenCode TUI slash commands
 │   ├── commit.md           # /commit — conventional commit generator
@@ -49,8 +49,8 @@ opencode/
 
 | I want to… | Edit this file |
 |-----------|----------------|
-| Change an agent's behavior or instructions | `agent/<agent-name>.md` |
-| Change what tools an agent can use | `agent/<agent-name>.md` frontmatter AND `opencode.json` `agent` block |
+| Change an agent's behavior or instructions | `agents/<agent-name>.md` |
+| Change what tools an agent can use | `agents/<agent-name>.md` frontmatter AND `opencode.json` `agent` block |
 | Add/change an MCP server connection | `opencode.json` `mcp` block |
 | Change the AI model or provider | `opencode.json` `provider` block |
 | Add a new slash command | `commands/<command-name>.md` |
@@ -108,7 +108,7 @@ opencode/
 
 3. **Update `AGENTS.md`** — add a row to the Agent Inventory table and the delegation hierarchy tree.
 
-4. **Wire up routing** — if it's a domain lead, add a delegation rule to `agent/team-lead.md`.
+4. **Wire up routing** — if it's a domain lead, add a delegation rule to `agents/team-lead.md`.
 
 4. **Record the decision** in `DECISIONS.md`.
 
@@ -140,7 +140,7 @@ To create a new skill, use the `skill-creator` skill for guided authoring.
 
 Permissions are declared in **two places** and both must be consistent:
 
-1. **Agent frontmatter** (`agent/<name>.md`) — loaded by OpenCode at runtime
+1. **Agent frontmatter** (`agents/<name>.md`) — loaded by OpenCode at runtime
 2. **`opencode.json` `agent` block** — OpenCode override layer
 
 Permission levels:
@@ -199,6 +199,17 @@ for f in *.json; do python3 -m json.tool "$f" > /dev/null 2>&1 && echo "OK: $f" 
 # Check OpenCode version
 opencode --version
 ```
+
+## Configuration Quality Gates
+
+Run `./scripts/verify-config.sh`.
+
+It checks:
+- JSON validity
+- Quality gates
+- Required files
+
+For focused diagnostics, run `python3 scripts/check-quality-gates.py`.
 
 After any config change:
 1. Run JSON validation

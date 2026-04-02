@@ -41,8 +41,29 @@
       },
       "enabled": true,
       "type": "local"
+    },
+    "brave-search": {
+      "type": "remote",
+      "url": "https://mcp.brave.com/mcp",
+      "enabled": false,
+      "headers": {
+        "Authorization": "Bearer {env:BRAVE_API_KEY}"
+      }
+    },
+    "firecrawl": {
+      "type": "remote",
+      "url": "https://api.firecrawl.dev/mcp",
+      "enabled": false,
+      "headers": {
+        "Authorization": "Bearer {env:FIRECRAWL_API_KEY}"
+      }
     }
   },
+  "instructions": [
+    "rules/security-standards.md",
+    "rules/self-doubt-protocol.md",
+    "rules/communication-standards.md"
+  ],
   "default_agent": "team-lead",
   "agent": {
     "team-lead": {
@@ -124,6 +145,34 @@
       "temperature": 0.1,
       "steps": 10,
       "hidden": true
+    },
+    "finance-lead": {
+      "temperature": 0.1,
+      "steps": 15
+    },
+    "market-analyst": {
+      "steps": 30,
+      "hidden": true
+    },
+    "data-science-lead": {
+      "temperature": 0.1,
+      "steps": 15
+    },
+    "data-analyst": {
+      "steps": 30,
+      "hidden": true
+    },
+    "content-lead": {
+      "temperature": 0.1,
+      "steps": 15
+    },
+    "tech-writer": {
+      "steps": 30,
+      "hidden": true
+    },
+    "research-lead": {
+      "temperature": 0.1,
+      "steps": 15
     }
   }
 }
