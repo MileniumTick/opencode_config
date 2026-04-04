@@ -292,12 +292,13 @@ Engram stores global memory, but **each project needs its own documentation** so
 
 ### At the End of Every Session
 
-After completing work and saving to Engram, you MUST also update the project's local documentation using the `project-docs` tools (`init_change`, `list_changes`, `log_session`, `log_decision`, `generate_context`):
+After completing work and saving to Engram, you MUST also update the project's local documentation using the `project-docs` tools:
 
-0. **Initialize change folder (medium/large work)**: For medium/large work, initialize a change folder with `init_change` (slug + title + summary + kind).
+0. **Initialize change folder (medium/large work)**: For medium/large work, initialize a change folder with `init_change` (slug + title + summary + kind). The tool will auto-detect git changes and pre-fill templates with real data.
 
 1. **Log the session**: Use `log_session` tool to record what was accomplished
    - Include: task description, summary, files changed, key decisions, status
+   - If `change_slug` is provided, the tool will auto-append git diff stats and changed files to notes.md
 
 2. **Log decisions**: Use `log_decision` tool for any architectural or design decisions
    - Include: title, context, decision, rationale, alternatives considered, files affected

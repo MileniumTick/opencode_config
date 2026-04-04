@@ -1,6 +1,67 @@
 import { tool } from "@opencode-ai/plugin"
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "fs"
 import { join, dirname } from "path"
+import { exec } from "node:child_process"
+import { promisify } from "node:util"
+
+const execAsync = promisify(exec)
+
+// ── Git helpers ──────────────────────────────────────────────────────────────
+
+async function safeGit(cwd: string, cmd: string): Promise<string> {
+  try {
+    const { stdout } = await execAsync(`git ${cmd}`, { cwd, maxBuffer: 1024 * 1024 })
+    return stdout.trim()
+  } catch {
+    return ""
+  }
+}
+
+async function getGitDiffStat(cwd: string): Promise<string> {
+  let stat = await safeGit(cwd, "diff --cached --stat")
+  if (!stat) {
+    stat = await safeGit(cwd, "diff --stat")
+  }
+  if (!stat) {
+    stat = await safeGit(cwd, "diff HEAD --stat")
+  }
+  return stat
+}
+
+async function getGitDiffFiles(cwd: string): Promise<string[]> {
+  let raw = await safeGit(cwd, "diff --cached --name-only")
+  if (!raw) {
+    raw = await safeGit(cwd, "diff --name-only")
+  }
+  if (!raw) {
+    raw = await safeGit(cwd, "diff HEAD --name-only")
+  }
+  return raw ? raw.split("\n").filter(Boolean) : []
+}
+
+async function getGitDiffStatDetailed(cwd: string): Promise<string[]> {
+  // Returns lines like " path/to/file.ts | 3 ++-"
+  let raw = await safeGit(cwd, "diff --cached --stat")
+  if (!raw) {
+    raw = await safeGit(cwd, "diff --stat")
+  }
+  if (!raw) {
+    raw = await safeGit(cwd, "diff HEAD --stat")
+  }
+  return raw ? raw.split("\n").filter(Boolean) : []
+}
+
+async function getRecentCommits(cwd: string, count = 10): Promise<string> {
+  return safeGit(cwd, `log --oneline -${count}`)
+}
+
+async function getRecentCommitDetails(cwd: string, count = 5): Promise<string> {
+  return safeGit(cwd, `log -${count} --format="%h %s%n%b---"`)
+}
+
+async function isGitRepo(cwd: string): Promise<boolean> {
+  return safeGit(cwd, "rev-parse --git-dir").then((r) => r.length > 0)
+}
 
 function slugify(input: string): string {
   const slug = input
@@ -93,6 +154,16 @@ export const log_session = tool({
 
     ensureDir(docsDir)
 
+    // Auto-populate files_changed from git if arg is empty
+    let filesChanged = args.files_changed ?? []
+    const inGitRepo = await isGitRepo(projectDir)
+    if (inGitRepo && filesChanged.length === 0) {
+      const gitFiles = await getGitDiffFiles(projectDir)
+      if (gitFiles.length > 0) {
+        filesChanged = gitFiles
+      }
+    }
+
     const sessionsFile = join(docsDir, "SESSIONS.md")
     const date = new Date().toISOString().replace("T", " ").substring(0, 19) + " UTC"
 
@@ -100,8 +171,8 @@ export const log_session = tool({
       `- **Agent**: ${args.agent}\n` +
       `- **Status**: ${args.status}\n` +
       `- **Summary**: ${args.summary}\n` +
-      (args.files_changed && args.files_changed.length > 0
-        ? `- **Files changed**:\n${args.files_changed.map((f: string) => `  - \`${f}\``).join("\n")}\n`
+      (filesChanged.length > 0
+        ? `- **Files changed**:\n${filesChanged.map((f: string) => `  - \`${f}\``).join("\n")}\n`
         : "") +
       (args.decisions && args.decisions.length > 0
         ? `- **Key decisions**:\n${args.decisions.map((d: string) => `  - ${d}`).join("\n")}\n`
@@ -120,7 +191,21 @@ export const log_session = tool({
       const noteTime = new Date().toISOString().replace("T", " ").substring(0, 19) + " UTC"
       const noteEntry = `- [${noteTime}] **${args.task}** — ${args.summary}${args.change_note ? ` (${args.change_note})` : ""}\n`
       const notesExisting = existsSync(notesFile) ? readFileSync(notesFile, "utf-8") : ""
-      writeFileSync(notesFile, notesExisting + noteEntry, "utf-8")
+
+      // Append technical summary section with git data
+      let technicalSummary = ""
+      if (inGitRepo) {
+        const gitDiffStat = await getGitDiffStat(projectDir)
+        const gitDiffFiles = await getGitDiffFiles(projectDir)
+        const recentCommits = await getRecentCommits(projectDir, 3)
+
+        technicalSummary = `\n### Technical Summary\n` +
+          `- **Files changed**: ${gitDiffFiles.length > 0 ? gitDiffFiles.join(", ") : "(none detected)"}\n` +
+          (gitDiffStat ? `- **Diff stat**:\n\`\`\`\n${gitDiffStat}\n\`\`\`\n` : "") +
+          (recentCommits ? `- **Recent commits**:\n${recentCommits.split("\n").filter(Boolean).map((l) => `  - ${l}`).join("\n")}\n` : "")
+      }
+
+      writeFileSync(notesFile, notesExisting + noteEntry + technicalSummary, "utf-8")
     }
 
     return JSON.stringify({ status: "logged", file: `docs/ai-work/SESSIONS.md`, task: args.task })
@@ -196,10 +281,46 @@ export const init_change = tool({
     ensureDir(changeDir)
 
     const today = new Date().toISOString().split("T")[0]
+
+    // Auto-detect git state
+    const inGitRepo = await isGitRepo(projectDir)
+    const diffStat = inGitRepo ? await getGitDiffStatDetailed(projectDir) : []
+    const diffFiles = inGitRepo ? await getGitDiffFiles(projectDir) : []
+    const recentCommits = inGitRepo ? await getRecentCommits(projectDir, 5) : ""
+
+    // Build observed changes section
+    let observedChangesSection = ""
+    let changedFilesTable = ""
+    let diffStatSection = ""
+
+    if (diffFiles.length > 0) {
+      const fileLines = diffStat.map((line) => {
+        const trimmed = line.trim()
+        // Extract filename from stat line like " path/to/file.ts | 3 ++-"
+        const match = trimmed.match(/\s*(.+?)\s*\|/)
+        return match ? `- ${match[1]}` : `- ${trimmed}`
+      }).join("\n")
+
+      observedChangesSection = `\n## Observed Changes\nFiles modified in working tree:\n${fileLines}\n`
+
+      if (recentCommits) {
+        const commitLines = recentCommits
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => `- ${line}`)
+          .join("\n")
+        observedChangesSection += `\n## Recent Context\n${commitLines}\n`
+      }
+
+      changedFilesTable = `\n## Changed Files\n| File | Status |\n|------|--------|\n${diffFiles.map((f) => `| ${f} | modified |`).join("\n")}\n`
+
+      diffStatSection = `\n## Changed Files Summary\n\`\`\`\n${diffStat.join("\n")}\n\`\`\`\n`
+    }
+
     const templates: Record<string, string> = {
-      "spec.md": `# Spec — ${args.title}\n\n- **Slug**: ${slug}\n- **Kind**: ${args.kind}\n- **Summary**: ${args.summary}\n\n## Problem\n[Describe the problem]\n\n## Scope\n[In scope / out of scope]\n\n## Acceptance Criteria\n- [ ] ...\n`,
-      "tasks.md": `# Tasks — ${args.title}\n\n## Checklist\n- [ ] Task 1\n- [ ] Task 2\n\n## Dependencies\n- None\n`,
-      "verify.md": `# Verify — ${args.title}\n\n## Validation Steps\n- [ ] Tests executed\n- [ ] Manual checks completed\n\n## Result\n- Status: pending\n- Notes:\n`,
+      "spec.md": `# Spec — ${args.title}\n\n- **Slug**: ${slug}\n- **Kind**: ${args.kind}\n- **Summary**: ${args.summary}\n\n## Problem\n[Describe the problem]${observedChangesSection}\n\n## Scope\n[In scope / out of scope]\n\n## Acceptance Criteria\n- [ ] ...\n`,
+      "tasks.md": `# Tasks — ${args.title}\n\n## Checklist\n- [ ] Review changes${diffFiles.length > 0 ? ` in ${diffFiles.length} file(s)` : ""}\n- [ ] Verify tests pass\n- [ ] Manual validation\n${changedFilesTable}\n## Dependencies\n- None\n`,
+      "verify.md": `# Verify — ${args.title}\n\n## Validation Steps\n- [ ] Review diff${diffFiles.length > 0 ? ` for ${diffFiles.length} file(s)` : ""}\n- [ ] Run tests\n- [ ] Manual checks completed\n${diffStatSection}\n## Result\n- Status: pending\n- Notes:\n`,
       "notes.md": `# Notes — ${args.title}\n\n## Session Notes\n- [${today}] Initialized change.\n`,
     }
 
@@ -223,6 +344,8 @@ export const init_change = tool({
       path: join("docs", "ai-work", "changes", slug),
       created_files,
       existing_files,
+      git_enriched: inGitRepo && diffFiles.length > 0,
+      files_detected: diffFiles.length,
     })
   },
 })

@@ -312,6 +312,8 @@ When agents work on a project, they automatically create and maintain a `docs/ai
 | `docs/ai-work/changes/<slug>/verify.md` | Validation evidence | `init_change` tool |
 | `docs/ai-work/changes/<slug>/notes.md` | Chronological change notes | `log_session` / `log_decision` |
 
+> **Auto-enrichment**: When `init_change` is called, the tool automatically detects git changes (diff stats, modified files, recent commits) and pre-fills `spec.md`, `tasks.md`, and `verify.md` with real project data. When `log_session` is called with `change_slug`, it auto-appends git diff stats to `notes.md`. No manual data entry needed.
+
 **Rules:**
 - Small task (single session): only `SESSIONS.md` + `DECISIONS.md`
 - Medium/Large task: initialize `changes/<slug>/` and use `change_slug` in logs
