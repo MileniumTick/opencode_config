@@ -334,6 +334,11 @@ The `project-docs` Custom Tool (`tools/project-docs.ts`) manages these files aut
 | `send-alert` | `tools/send-alert.ts` | Send webhook notifications (Slack, Discord) |
 | `generate-report` | `tools/generate-report.ts` | Generate structured Markdown reports |
 | `rtk` (plugin) | `plugins/rtk.ts` | Rewrite bash commands for token savings |
+| `auto-commit` (plugin) | `plugins/auto-commit.ts` | Safely auto-commit verified non-doc-only session changes on idle |
+
+- Auto-commit requires `git user.name` and `git user.email` to be configured.
+- It never pushes automatically.
+- It skips docs-only changes and throttles repeated idle events.
 
 ---
 
