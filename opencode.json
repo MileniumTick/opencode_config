@@ -25,7 +25,7 @@
         "GITEA_HOST": "https://gitea.istmocenter.com",
         "GITEA_ACCESS_TOKEN": "{file:.secrets/gitea-token}"
       },
-      "enabled": true,
+      "enabled": false,
       "type": "local"
     },
     "plane": {
@@ -39,7 +39,7 @@
         "PLANE_BASE_URL": "https://plane.intranet.istmocenter.com",
         "PLANE_WORKSPACE_SLUG": "{file:.secrets/plane-workspace-slug}"
       },
-      "enabled": true,
+      "enabled": false,
       "type": "local"
     },
     "brave-search": {
