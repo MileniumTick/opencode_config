@@ -204,10 +204,22 @@ Cross-domain workers (any lead can delegate to these):
 
 ```
 User → @team-lead (Level 1)
-         ├─ Simple task  → delegates directly to worker (Level 3)
-         ├─ Domain task  → routes to domain lead (Level 2) → worker(s) (Level 3)
-         └─ Complex task → Plan-and-Execute: creates Task Ledger, coordinates multiple leads
+         │
+         └─ Triviality Check
+              ├─ Trivial (Single-file, simple bug fix, docs) → Domain Lead/Worker
+              └─ Non-Trivial (Multi-file, new feature, complex refactor) → Mandatory handoff to `sdd-workflow` orchestrator
 ```
+
+### Spec-Driven Development (SDD) Workflow
+
+For all non-trivial changes, the following sequence is mandatory:
+
+1. **Discovery**: `sdd-explore` $\rightarrow$ `sdd-propose`
+2. **Materialization**: `project-docs:init_change` (MUST be called here to create the `docs/ai-work/changes/<slug>/` folder and initial Markdown files).
+3. **Specification**: `sdd-spec` $\rightarrow$ `sdd-tasks` (**Hard Gate**: Spec must be approved by the user before any implementation begins).
+4. **Execution**: `sdd-apply` (Implementation performed in iterative batches).
+5. **Validation**: `sdd-verify` (Verification of implementation against the approved spec).
+6. **Closure**: `sdd-archive` (Final persistence and merging of specs into main).
 
 ### Orchestration Level Capabilities
 
@@ -303,7 +315,7 @@ When agents work on a project, they automatically create and maintain a `docs/ai
 | `docs/ai-work/DECISIONS.md` | Architecture and design decisions with rationale | `log_decision` tool (auto) |
 | `docs/ai-work/CONTEXT.md` | High-level project overview and current state | `generate_context` tool (auto) |
 
-#### For Medium/Large Changes (SDD-lite)
+#### For Non-Trivial Changes (SDD Workflow)
 
 | File | Purpose | Updated by |
 |------|---------|------------|
@@ -312,11 +324,12 @@ When agents work on a project, they automatically create and maintain a `docs/ai
 | `docs/ai-work/changes/<slug>/verify.md` | Validation evidence | `init_change` tool |
 | `docs/ai-work/changes/<slug>/notes.md` | Chronological change notes | `log_session` / `log_decision` |
 
+> **Source of Truth**: For non-trivial changes, the files in `docs/ai-work/changes/<slug>/` are the canonical source of truth for the change's intent and progress.
 > **Auto-enrichment**: When `init_change` is called, the tool automatically detects git changes (diff stats, modified files, recent commits) and pre-fills `spec.md`, `tasks.md`, and `verify.md` with real project data. When `log_session` is called with `change_slug`, it auto-appends git diff stats to `notes.md`. No manual data entry needed.
 
 **Rules:**
 - Small task (single session): only `SESSIONS.md` + `DECISIONS.md`
-- Medium/Large task: initialize `changes/<slug>/` and use `change_slug` in logs
+- Non-trivial task: initialize `changes/<slug>/` and **MUST** use `change_slug` in all `log_session` and `log_decision` calls.
 
 This ensures that any human or agent opening a project can see:
 - What the AI has done in this project
